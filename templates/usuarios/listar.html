@@ -1,0 +1,53 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+
+    <h1>Usuários</h1>
+
+    <div align="center">
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Ativo</th>
+            <th>Admin</th>
+            <th></th>
+        </tr>
+        {% for usuario in usuarios %}
+        <tr>
+            <td>{{ usuario.id }}</td>
+            <td>{{ usuario.username }}</td>
+            <td>{{ usuario.email }}</td>
+            <td>{{ usuario.is_active }}</td>
+            <td>{{ usuario.is_superuser }}</td>
+                <td>
+                   <a href="{% url 'editar_usuario' usuario.id %}">
+                        <button>Editar</button>
+                    </a>
+
+
+                   <a href="{% url 'deletar_usuario' usuario.id %}">
+                        <button>Excluir</button>
+                    </a>
+                </td>
+                </th>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+    </div>
+    <div align="left">
+    <a href="{% url 'criar_usuario' %}">
+        <button>Criar Usuário</button>
+    </a>
+
+    <a href="{% url 'home' %}">
+        <button>Voltar</button>
+    </a>
+    </div>
+
+
+{% endblock %}

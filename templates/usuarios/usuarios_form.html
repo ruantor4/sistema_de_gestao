@@ -1,0 +1,25 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+<div align="center">
+ <h1>{% if usuario %}Editar Usuário{% else %}Criar Usuário{% endif %}</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label>Username:</label>
+        <input type="text" name="username" value="{% if usuario %}{{ usuario.username }}{% endif %}" required><br>
+
+        <label>Email:</label>
+        <input type="email" name="email" value="{% if usuario %}{{ usuario.email }}{% endif %}" required><br>
+
+        <label>Senha:</label>
+        <input type="password" name="senha" placeholder="Deixe em branco para não alterar"><br><br>
+
+        <button type="submit">{% if usuario %}Atualizar{% else %}Criar{% endif %}</button>
+    </form>
+<br>
+    <a href="{% url 'listar_usuarios' %}">
+        <button>Voltar</button>
+    </a>
+</div>
+{% endblock %}

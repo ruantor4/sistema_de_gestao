@@ -1,0 +1,70 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+
+    <h1>Produtos</h1>
+
+    <div align="center">
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>quantidade</th>
+            <th>Imagem do produto</th>
+            <th>Anexo</th>
+            <th>Localização</th>
+            <th>Descrição</th>
+            <th></th>
+        </tr>
+        {% for produto in produtos %}
+        <tr>
+            <td>{{ produto.id }}</td>
+            <td>{{ produto.nome }}</td>
+            <td>{{ produto.quantidade }}</td>
+            <td>
+            {% if produto.imagem %}
+                <img src="{{ produto.imagem.url }}" alt="Imagem do produto" width="80">
+            {% else %}
+                Sem imagem
+            {% endif %}
+            </td>
+            <td>
+               {% if produto.datasheet %}
+                    <a href="{{ produto.datasheet.url }}" download>Baixar PDF</a>
+                {% else %}
+                    Nenhum anexo
+                {% endif %}
+            </td>
+            <td>{{ produto.localizacao }}</td>
+            <td>{{ produto.descricao }}</td>
+                <td>
+                   <a href="#">
+                        <button>Editar</button>
+                    </a>
+
+
+                   <a href="#">
+                        <button>Excluir</button>
+                    </a>
+                </td>
+                </th>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+    <br>
+    </div>
+    <div align="left">
+    <a href="">
+        <button>Criar Produto</button>
+    </a>
+
+    <a href="{% url 'home' %}">
+        <button>Voltar</button>
+    </a>
+    </div>
+
+
+{% endblock %}

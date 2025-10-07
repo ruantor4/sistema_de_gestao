@@ -1,0 +1,22 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+    <h2>HOME</h2>
+
+
+ <h1 align="center">Painel Principal</h1>
+
+    <div align="center">
+        <p>
+            <a href="{% url 'listar_usuarios' %}">
+                <button>Gestão de Usuários</button>
+            </a>
+        </p>
+        <p>
+            <a href="{% url 'listar_estoque' %}">
+                <button>Gestão de Estoque</button>
+            </a>
+        </p>
+    </div>
+
+{% endblock %}
