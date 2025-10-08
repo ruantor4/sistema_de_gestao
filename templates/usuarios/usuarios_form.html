@@ -7,10 +7,10 @@
     <form method="POST">
         {% csrf_token %}
         <label>Username:</label>
-        <input type="text" name="username" value="{% if usuario %}{{ usuario.username }}{% endif %}" required><br>
+        <input type="text" name="username" value="{% if usuario %}{{ usuario.username }}{% endif %}" required><br><br>
 
         <label>Email:</label>
-        <input type="email" name="email" value="{% if usuario %}{{ usuario.email }}{% endif %}" required><br>
+        <input type="email" name="email" value="{% if usuario %}{{ usuario.email }}{% endif %}" required><br><br>
 
         <label>Senha:</label>
         <input type="password" name="senha" placeholder="Deixe em branco para não alterar"><br><br>

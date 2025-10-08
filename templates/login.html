@@ -5,17 +5,19 @@
     <title>Title</title>
 </head>
 <body>
-    <h1>Login</h1>
+
     <form action="submit" method="POST">{% csrf_token %}
     <div align="center">
-        <label>Usuário:</label>
-        <input type="text" name="username" id="username">
-        <label>Senha:</label>
-        <input type="password" name="password" id="password">
-        <button type="submit">Entrar</button>
+        <h1>Login</h1><br><br>
+            <label>Usuário:</label>
+            <input type="text" name="username" id="username"><br><br>
 
+            <label>Senha:</label>
+            <input type="password" name="password" id="password"><br><br>
+            <button type="submit">Entrar</button>
+
+            <p><a href="{% url 'pedido_reset_senha' %}">Esqueceu sua senha?</a></p><br>
     </div>
-        <p><a href="">Esqueceu sua senha?</a></p>
     </form>
     <br>
     {% for message in messages %}
