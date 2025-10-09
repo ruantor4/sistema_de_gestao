@@ -1,8 +1,22 @@
 {% extends "model-page.html" %}
 
 {% block content %}
-
+    <div align="right">
+        <a href="/logout">
+            <button>Logout</button>
+        </a>
+    </div>
     <h1>Usuários</h1>
+    <div align="left">
+    <a href="{% url 'criar_usuario' %}">
+        <button>Criar Usuário</button>
+    </a>
+
+    <a href="{% url 'home' %}">
+        <button>Voltar</button>
+    </a>
+    </div>
+    <br><br><br>
 
     <div align="center">
     <table border="1" cellpadding="5">
@@ -39,15 +53,7 @@
 
     </table>
     </div>
-    <div align="left">
-    <a href="{% url 'criar_usuario' %}">
-        <button>Criar Usuário</button>
-    </a>
 
-    <a href="{% url 'home' %}">
-        <button>Voltar</button>
-    </a>
-    </div>
 
 
 {% endblock %}

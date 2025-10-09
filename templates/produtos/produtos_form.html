@@ -1,37 +1,57 @@
 {% extends "model-page.html" %}
 
 {% block content %}
+    <div align="right">
+    <a href="/logout">
+        <button>Logout</button>
+    </a>
+    </div>
 <div align="center">
- <h1>{% if usuario %}Editar Produto{% else %}Criar Produto{% endif %}</h1>
+ <h1>{% if produto %}Editar Produto{% else %}Criar Produto{% endif %}</h1>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <label>Username:</label>
-        <input type="text" name="username" value="{% if usuario %}{{ produto.nome }}{% endif %}" required><br>
+        <label>Nome:</label>
+        <input type="text" name="nome" value="{% if produto %}{{ produto.nome }}{% endif %}" required>
+        <br><br>
 
-        <label>Email:</label>
-        <input type="text" name="email" value="{% if usuario %}{{ produto.quantidade }}{% endif %}" required><br>
+        <label>Quantidade:</label>
+        <input type="number" name="quantidade" value="{% if produto %}{{ produto.quantidade }}{% endif %}"required>
+        <br><br>
 
-        <label>Email:</label>
-        <input type="img" name="imagem" value="{% if usuario %}{{ produto.imagem }}{% endif %}" required><br>
+        <label>Imagem:</label>
+        <input type="file" name="imagem">
+        {% if produto and produto.imagem %}
+            <br>
+            <a href="{{ produto.imagem.url }}" target="_blank">
+                    {{ produto.imagem.name|cut:"estoque/images/" }}
+            </a>
+        {% endif %}
+        <br><br>
+        <label>Anexo:</label>
+        <input type="file" name="datasheet">
+        {% if produto and produto.datasheet %}
+            <br>
+            <a href="{{ produto.datasheet.url }}">
+                    {{ produto.datasheet.name|cut:"estoque/anexos/" }}
+            </a>
+        {% endif %}
+        <br><br>
 
-        <label>Email:</label>
-        <input type="text" name="datasheet" value="{% if usuario %}{{ produto.datasheet }}{% endif %}" required><br>
+        <label>Localização:</label>
+        <input type="text" name="localizacao" value="{% if produto %}{{ produto.localizacao }}{% endif %}"required>
+        <br><br>
 
-        <label>Email:</label>
-        <input type="text" name="localizacao" value="{% if usuario %}{{ produto.localizacao }}{% endif %}" required><br>
-
-        <label>Email:</label>
-        <input type="text" name="descricao" value="{% if usuario %}{{ produto.descricao }}{% endif %}" required><br>
-
-        <label>Senha:</label>
-        <input type="password" name="senha" placeholder="Deixe em branco para não alterar"><br><br>
+        <label>Descrição:</label><br>
+        <textarea name="descricao" required>{% if produto %}{{ produto.descricao }}{% endif %}</textarea>
+        <br><br>
 
         <button type="submit">{% if produto %}Atualizar{% else %}Criar{% endif %}</button>
     </form>
 <br>
-    <a href="{% url 'listar_produtos' %}">
+    <a href="{% url 'listar_estoque' %}">
         <button>Voltar</button>
     </a>
 </div>
 {% endblock %}
+

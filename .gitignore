@@ -28,3 +28,9 @@ env/
 # Arquivos temporários
 *.tmp
 *.bak
+
+# Imagens de teste do projeto
+*.jpg
+*.jpeg
+*.png
+*.pdf
