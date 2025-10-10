@@ -1,12 +1,13 @@
 {% extends "model-page.html" %}
 
 {% block content %}
-     <div align="right">
+    <div align="right">
         <a href="/logout">
             <button>Logout</button>
         </a>
     </div>
-    <h2>HOME</h2>
+
+
     <h1 align="center">Painel Principal</h1>
     <div align="center">
         <p>
@@ -18,6 +19,16 @@
             <a href="{% url 'listar_estoque' %}">
                 <button>Gestão de Estoque</button>
             </a>
+        </p>
+        <p>
+            <a href="{% url 'registrar_movimentacao' %}">
+                <button>Registrar movimentação</button>
+            </a>
+        </p>
+        <p>
+                <a href="{% url 'listar_movimentacao' %}">
+                    <button>Movimentações</button>
+                </a>
         </p>
     </div>
 

@@ -6,67 +6,95 @@
             <button>Logout</button>
         </a>
     </div>
+    <div align="center">
+        <h2>Buscar Produtos</h2>
+
+        <form method="GET" action="{% url 'buscar_produtos' %}">
+            <input type="text" name="q" value="{{ termo }}" placeholder="Digite o nome do produto..." required>
+            <button type="submit">Buscar</button>
+            {% if termo %}
+                <a href="{% url 'listar_estoque' %}">
+                    <button type="button">Limpar</button>
+                </a>
+            {% endif %}
+            {% if produtos %}
+                <h3>Resultados da busca por {{ termo }}:</h3>
+
+            {% elif termo %}
+                <p>Nenhum produto encontrado para "{{ termo }}".</p>
+            {% endif %}
+
+        </form>
+
+    </div>
     <h1>Produtos</h1>
     <div align="left">
-    <a href="{% url 'criar_produto' %}">
-        <button>Criar Produto</button>
-    </a>
-    <a href="{% url 'home' %}">
-        <button>Voltar</button>
-    </a>
+        {% if user.is_superuser %}
+            <a href="{% url 'criar_produto' %}">
+                <button>Criar Produto</button>
+            </a>
+        {% endif %}
+        <a href="{% url 'home' %}">
+            <button>Voltar</button>
+        </a>
     </div>
+
     <br><br><br>
     <div align="center">
-    <table border="1" cellpadding="5">
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>quantidade</th>
-            <th>Imagem do produto</th>
-            <th>Anexo</th>
-            <th>Localização</th>
-            <th>Descrição</th>
-            <th></th>
-        </tr>
-        {% for produto in produtos %}
-        <tr>
-            <td>{{ produto.id }}</td>
-            <td>{{ produto.nome }}</td>
-            <td>{{ produto.quantidade }}</td>
-            <td>
-            {% if produto.imagem %}
-                <img src="{{ produto.imagem.url }}" alt="Imagem do produto" width="80">
-            {% else %}
-                Sem imagem
-            {% endif %}
-            </td>
-            <td>
-               {% if produto.datasheet %}
-                    <a href="{{ produto.datasheet.url }}" download>Baixar PDF</a>
-                {% else %}
-                    Nenhum anexo
-                {% endif %}
-            </td>
-            <td>{{ produto.localizacao }}</td>
-            <td>{{ produto.descricao }}</td>
-                <td>
-                   <a href="{% url 'editar_produto' produto.id %}">
-                        <button>Editar</button>
-                    </a>
+        <table border="1" cellpadding="5">
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>quantidade</th>
+                <th>Imagem do produto</th>
+                <th>Anexo</th>
+                <th>Localização</th>
+                <th>Descrição</th>
+                <th></th>
+            </tr>
+            {% for produto in produtos %}
+                <tr>
+                    <td>{{ produto.id }}</td>
+                    <td>
+                        <a href="{% url 'detalhe_produto' produto.id %}">
+                            {{ produto.nome }}
+                        </a>
+                    </td>
+                    <td>{{ produto.quantidade }}</td>
+                    <td>
+                        {% if produto.imagem %}
+                            <img src="{{ produto.imagem.url }}" alt="Imagem" width="80"
+                                 style="transition: transform 0.2s;"
+                                 onmouseover="this.style.transform='scale(1.2)'"
+                                 onmouseout="this.style.transform='scale(1)'">
+                        {% else %}
+                            Sem imagem
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if produto.datasheet %}
+                            <a href="{{ produto.datasheet.url }}" download>Baixar PDF</a>
+                        {% else %}
+                            Nenhum anexo
+                        {% endif %}
+                    </td>
+                    <td>{{ produto.localizacao }}</td>
+                    <td>{{ produto.descricao }}</td>
+                    <td>
+                        {% if user.is_superuser %}
+                            <a href="{% url 'editar_produto' produto.id %}">
+                                <button>Editar</button>
+                            </a>
 
-
-                   <a href="{% url 'deletar_produto' produto.id %}">
-                        <button>Excluir</button>
-                    </a>
-                </td>
-                </th>
-
-        </tr>
-
-        {% endfor %}
-
-    </table>
-    <br>
+                            <a href="{% url 'deletar_produto' produto.id %}">
+                                <button>Excluir</button>
+                            </a>
+                        {% endif %}
+                    </td>
+                    </th>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
 
 

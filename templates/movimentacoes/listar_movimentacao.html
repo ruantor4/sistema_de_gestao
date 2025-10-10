@@ -1,0 +1,71 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+<div align="right">
+    <a href="/logout">
+        <button>Logout</button>
+    </a>
+</div>
+
+<h1 align="center">Movimentações de Produtos</h1>
+
+<div align="left" style="margin-bottom: 20px;">
+    <a href="{% url 'registrar_movimentacao' %}">
+        <button>Registrar Movimentação</button>
+    </a>
+    <a href="{% url 'home' %}">
+        <button>Voltar</button>
+    </a>
+</div>
+
+<div align="center">
+    <table border="1" cellpadding="5">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Produto</th>
+                <th>Tipo</th>
+                <th>Quantidade</th>
+                <th>Estoque Atual</th>
+                <th>Data</th>
+                <th>Imagem</th>
+                <th>Anexo</th>
+                <th>Localização</th>
+                <th>Descrição</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for movimentacao in movimentacoes %}
+            <tr>
+                <td>{{ movimentacao.id }}</td>
+                <td>{{ movimentacao.produto.nome }}</td>
+                <td>{{ movimentacao.tipo }}</td>
+                <td>{{ movimentacao.quantidade }}</td>
+                <td>{{ movimentacao.produto.quantidade }}</td>
+                <td>{{ movimentacao.data }}</td>
+                <td>
+                    {% if movimentacao.produto.imagem %}
+                        <img src="{{ movimentacao.produto.imagem.url }}" alt="Imagem" width="80" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                    {% else %}
+                        Sem imagem
+                    {% endif %}
+                </td>
+                <td>
+                    {% if movimentacao.produto.datasheet %}
+                        <a href="{{ movimentacao.produto.datasheet.url }}" download>Baixar PDF</a>
+                    {% else %}
+                        Nenhum anexo
+                    {% endif %}
+                </td>
+                <td>{{ movimentacao.produto.localizacao }}</td>
+                <td>{{ movimentacao.produto.descricao }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="10">Nenhuma movimentação encontrada.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

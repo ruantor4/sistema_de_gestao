@@ -15,9 +15,11 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 def login_user(request):
     return render(request, 'login.html')
 
+
 def logout_user(request):
     logout(request)
     return redirect('home')
+
 
 def pedido_reset_senha(request):
     if request.method == "POST":
@@ -80,7 +82,6 @@ def confirmacao_reset_senha(request, uidb64, token):
         return redirect("login")
 
 
-
 def submit_login(request):
     if request.POST:
         username = request.POST['username']
@@ -93,9 +94,11 @@ def submit_login(request):
             return redirect('home')
     return redirect('home')
 
+
 @login_required(login_url='login/')
 def home(request):
     return render(request, 'home.html')
+
 
 @login_required(login_url='login/')
 def listar_usuarios(request):
@@ -111,9 +114,11 @@ def criar_usuario(request):
         password = request.POST.get('password')
 
         usuario = User.objects.create_user(
-                        username=username,
-                        email=email,
-                        password=password)
+            username=username,
+            email=email,
+            password=password
+        )
+
         usuario.save()
         messages.success(request, "Usuario criado com sucesso!.")
         return redirect('listar_usuarios')
@@ -143,7 +148,7 @@ def editar_usuario(request, usuario_id):
 @login_required(login_url='login/')
 def deletar_usuario(request, usuario_id):
     usuario = get_object_or_404(User, id=usuario_id)
-    if usuario.is_superuser:
+    if usuario.is_superuser == 'admin':
         messages.error(request, "Não é permitido excluir o admin")
     else:
         usuario.delete()

@@ -1,30 +1,31 @@
 {% extends "model-page.html" %}
 
 {% block content %}
-     <div align="right">
+    <div align="right">
         <a href="/logout">
             <button>Logout</button>
         </a>
     </div>
-<div align="center">
- <h1>{% if usuario %}Editar Usuário{% else %}Criar Usuário{% endif %}</h1>
+    <div align="center">
+        <h1>{% if usuario %}Editar Usuário{% else %}Criar Usuário{% endif %}</h1>
 
-    <form method="POST">
-        {% csrf_token %}
-        <label>Username:</label>
-        <input type="text" name="username" value="{% if usuario %}{{ usuario.username }}{% endif %}" required><br><br>
+        <form method="POST">
+            {% csrf_token %}
+            <label>Username:</label>
+            <input type="text" name="username" value="{% if usuario %}{{ usuario.username }}{% endif %}"
+                   required><br><br>
 
-        <label>Email:</label>
-        <input type="email" name="email" value="{% if usuario %}{{ usuario.email }}{% endif %}" required><br><br>
+            <label>Email:</label>
+            <input type="email" name="email" value="{% if usuario %}{{ usuario.email }}{% endif %}" required><br><br>
 
-        <label>Senha:</label>
-        <input type="password" name="senha" placeholder="Deixe em branco para não alterar"><br><br>
+            <label>Senha:</label>
+            <input type="password" name="password" placeholder="Deixe em branco para não alterar"><br><br>
 
-        <button type="submit">{% if usuario %}Atualizar{% else %}Criar{% endif %}</button>
-    </form>
-<br>
-    <a href="{% url 'listar_usuarios' %}">
-        <button>Voltar</button>
-    </a>
-</div>
+            <button type="submit">{% if usuario %}Atualizar{% else %}Criar{% endif %}</button>
+        </form>
+        <br>
+        <a href="{% url 'listar_usuarios' %}">
+            <button>Voltar</button>
+        </a>
+    </div>
 {% endblock %}

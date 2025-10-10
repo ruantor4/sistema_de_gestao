@@ -2,56 +2,56 @@
 
 {% block content %}
     <div align="right">
-    <a href="/logout">
-        <button>Logout</button>
-    </a>
+        <a href="/logout">
+            <button>Logout</button>
+        </a>
     </div>
-<div align="center">
- <h1>{% if produto %}Editar Produto{% else %}Criar Produto{% endif %}</h1>
+    <div align="center">
+        <h1>{% if produto %}Editar Produto{% else %}Criar Produto{% endif %}</h1>
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label>Nome:</label>
-        <input type="text" name="nome" value="{% if produto %}{{ produto.nome }}{% endif %}" required>
-        <br><br>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label>Nome:</label>
+            <input type="text" name="nome" value="{% if produto %}{{ produto.nome }}{% endif %}" required>
+            <br><br>
 
-        <label>Quantidade:</label>
-        <input type="number" name="quantidade" value="{% if produto %}{{ produto.quantidade }}{% endif %}"required>
-        <br><br>
+            <label>Quantidade:</label>
+            <input type="number" name="quantidade" value="{% if produto %}{{ produto.quantidade }}{% endif %}" required>
+            <br><br>
 
-        <label>Imagem:</label>
-        <input type="file" name="imagem">
-        {% if produto and produto.imagem %}
-            <br>
-            <a href="{{ produto.imagem.url }}" target="_blank">
+            <label>Imagem:</label>
+            <input type="file" name="imagem">
+            {% if produto and produto.imagem %}
+                <br>
+                <a href="{{ produto.imagem.url }}" target="_blank">
                     {{ produto.imagem.name|cut:"estoque/images/" }}
-            </a>
-        {% endif %}
-        <br><br>
-        <label>Anexo:</label>
-        <input type="file" name="datasheet">
-        {% if produto and produto.datasheet %}
-            <br>
-            <a href="{{ produto.datasheet.url }}">
+                </a>
+            {% endif %}
+            <br><br>
+            <label>Anexo:</label>
+            <input type="file" name="datasheet">
+            {% if produto and produto.datasheet %}
+                <br>
+                <a href="{{ produto.datasheet.url }}">
                     {{ produto.datasheet.name|cut:"estoque/anexos/" }}
-            </a>
-        {% endif %}
-        <br><br>
+                </a>
+            {% endif %}
+            <br><br>
 
-        <label>Localização:</label>
-        <input type="text" name="localizacao" value="{% if produto %}{{ produto.localizacao }}{% endif %}"required>
-        <br><br>
+            <label>Localização:</label>
+            <input type="text" name="localizacao" value="{% if produto %}{{ produto.localizacao }}{% endif %}" required>
+            <br><br>
+            
+            <label>Descrição:</label><br>
+            <textarea name="descricao" rows="10" cols="25" required>{% if produto %}{{ produto.descricao }}{% endif %}</textarea>
+            <br><br>
 
-        <label>Descrição:</label><br>
-        <textarea name="descricao" required>{% if produto %}{{ produto.descricao }}{% endif %}</textarea>
-        <br><br>
-
-        <button type="submit">{% if produto %}Atualizar{% else %}Criar{% endif %}</button>
-    </form>
-<br>
-    <a href="{% url 'listar_estoque' %}">
-        <button>Voltar</button>
-    </a>
-</div>
+            <button type="submit">{% if produto %}Atualizar{% else %}Criar{% endif %}</button>
+        </form>
+        <br>
+        <a href="{% url 'listar_estoque' %}">
+            <button>Voltar</button>
+        </a>
+    </div>
 {% endblock %}
 

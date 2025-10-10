@@ -1,0 +1,51 @@
+{% extends 'model-page.html' %}
+
+{% block content %}
+     <div align="right">
+        <a href="/logout">
+            <button>Logout</button>
+        </a>
+    </div>
+    
+    <h2>Registrar Movimentação</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="produto">Produto:</label>
+        <select name="produto" id="produto" required>
+            <option value="">Selecione um produto</option>
+            {% for produto in produtos %}
+                <option value="{{ produto.id }}">
+                    {{ produto.nome }} ({{ produto.quantidade }} em estoque)
+                </option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label for="tipo">Tipo de Movimentação:</label>
+        <select name="tipo" id="tipo" required>
+            <option value="">Selecione</option>
+            <option value="entrada">Entrada</option>
+            <option value="saida">Saída</option>
+        </select>
+        <br><br>
+
+        <label for="quantidade">Quantidade:</label>
+        <input type="number" name="quantidade" id="quantidade" min="1" required>
+        <br><br>
+
+        <button type="submit">Registrar</button>
+    
+    </form>
+    <br>
+        <a href="{% url 'home' %}">
+            <button>Voltar</button>
+        </a>
+    <br>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

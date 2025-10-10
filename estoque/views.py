@@ -1,16 +1,85 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db import connection
+from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 
-from estoque.models import Produto
+from estoque.models import Produto, Movimentacao
 
 
 # Create your views here.
+@login_required(login_url='/login')
 def listar_estoque(request):
     produtos = Produto.objects.all()
     return render(request, "produtos/listar.html", {"produtos": produtos})
+
+
+@login_required(login_url='/login')
+def listar_movimentacao(request):
+    movimentacoes = Movimentacao.objects.all()
+    return render(request, 'movimentacoes/listar_movimentacao.html', {'movimentacoes': movimentacoes})
+
+
+@login_required(login_url='/login')
+def registrar_movimentacao(request):
+    if request.method == 'POST':
+        produto_id = request.POST.get('produto')
+        tipo = request.POST.get('tipo')
+        quantidade = int(request.POST.get('quantidade', 0))
+        produto = get_object_or_404(Produto, id=produto_id)
+
+        if tipo == 'entrada':
+            produto.quantidade += quantidade
+        elif tipo == 'saida':
+            if quantidade > produto.quantidade:
+                messages.error(request, f'Estoque insuficiente para saída de {quantidade} unidades.')
+                return redirect('registrar_movimentacao')
+            produto.quantidade -= quantidade
+        else:
+            messages.erro(request, 'tipo de movimentação inválida')
+            return redirect('registrar_movimentacao')
+
+        produto.save()
+        Movimentacao.objects.create(
+            usuario=request.user,
+            produto=produto,
+            tipo=tipo,
+            quantidade=quantidade
+        )
+        messages.success(request, 'Movimentação registrada com sucesso!')
+        return redirect('listar_movimentacao')
+
+    produtos = Produto.objects.all()
+    return render(request, 'movimentacoes/form.html', {'produtos': produtos})
+
+
+@login_required(login_url='/login')
+def buscar_produtos(request):
+    termo = request.GET.get('q', '').strip()
+    produtos = Produto.objects.none()
+
+    if termo:
+        produtos = Produto.objects.filter(nome__icontains=termo)
+    return render(request, 'produtos/listar.html', {'produtos': produtos, 'termo': termo})
+
+
+@login_required(login_url='/login')
+def detalhe_produto(request, produto_id):
+    produto = get_object_or_404(Produto, id=produto_id)
+
+    entradas = Movimentacao.objects.filter(tipo='entrada').aggregate(Sum('quantidade'))['quantidade__sum'] or 0
+    saidas = Movimentacao.objects.filter(tipo='saida').aggregate(Sum('quantidade'))['quantidade__sum'] or 0
+
+    saldo = entradas - saidas
+
+    return render(request, 'produtos/detalhe_produto.html', {
+        'produto': produto,
+        'entradas': entradas,
+        'saidas': saidas,
+        'saldo': saldo
+    })
 
 
 @login_required(login_url='/login')
@@ -36,6 +105,7 @@ def criar_produto(request):
         return redirect("listar_estoque")
     return render(request, "produtos/produtos_form.html")
 
+
 @login_required(login_url='/login')
 def editar_produto(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)
@@ -45,7 +115,6 @@ def editar_produto(request, produto_id):
         produto.descricao = request.POST.get("descricao")
         produto.quantidade = request.POST.get("quantidade")
         produto.localizacao = request.POST.get("localizacao")
-
         if request.FILES.get("imagem"):
             produto.imagem = request.FILES.get("imagem")
         if request.FILES.get("datasheet"):
@@ -55,6 +124,7 @@ def editar_produto(request, produto_id):
         messages.success(request, "Produto atualizado com sucesso!")
         return redirect("listar_estoque")
     return render(request, "produtos/produtos_form.html", {"produto": produto})
+
 
 @login_required(login_url='/login')
 def deletar_produto(request, produto_id):
