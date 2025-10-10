@@ -17,17 +17,24 @@ Including another URLconf
 from django.urls import path
 
 from user import views
-
 urlpatterns = [
+    # Página inicial
     path('', views.home, name='home'),
+
+    # Autenticação
     path('login/', views.login_user, name='login'),
+    path('login/submit', views.submit_login),
     path('logout/', views.logout_user, name='logout'),
+
+    # Recuperação de senha
     path('reset-password/', views.pedido_reset_senha, name='pedido_reset_senha'),
     path('reset_password/<uidb64>/<token>/', views.confirmacao_reset_senha, name='confirmacao_reset_senha'),
-    path('login/submit', views.submit_login),
+
+    # Gestão de usuários
     path('listar/', views.listar_usuarios, name='listar_usuarios'),
     path('criar/', views.criar_usuario, name='criar_usuario'),
     path('deletar/<int:usuario_id>/', views.deletar_usuario, name='deletar_usuario'),
     path('editar/<int:usuario_id>/', views.editar_usuario, name='editar_usuario'),
 
 ]
+

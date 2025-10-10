@@ -37,6 +37,7 @@
                     <td>{{ usuario.is_active }}</td>
                     <td>{{ usuario.is_superuser }}</td>
                     <td>
+                        {% if user.is_superuser %}
                         <a href="{% url 'editar_usuario' usuario.id %}">
                             <button>Editar</button>
                         </a>
@@ -45,6 +46,7 @@
                         <a href="{% url 'deletar_usuario' usuario.id %}">
                             <button>Excluir</button>
                         </a>
+                        {% endif %}
                     </td>
                     </th>
 

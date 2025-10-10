@@ -9,19 +9,19 @@ from django.contrib import messages
 from estoque.models import Produto, Movimentacao
 
 
-# Create your views here.
+# Lista todos produtos
 @login_required(login_url='/login')
 def listar_estoque(request):
     produtos = Produto.objects.all()
     return render(request, "produtos/listar.html", {"produtos": produtos})
 
-
+# Lista de movimentações
 @login_required(login_url='/login')
 def listar_movimentacao(request):
     movimentacoes = Movimentacao.objects.all()
     return render(request, 'movimentacoes/listar_movimentacao.html', {'movimentacoes': movimentacoes})
 
-
+# Registro das movimentações
 @login_required(login_url='/login')
 def registrar_movimentacao(request):
     if request.method == 'POST':
@@ -30,6 +30,7 @@ def registrar_movimentacao(request):
         quantidade = int(request.POST.get('quantidade', 0))
         produto = get_object_or_404(Produto, id=produto_id)
 
+        # Verifica o tipo de operação, soma ou subtrai
         if tipo == 'entrada':
             produto.quantidade += quantidade
         elif tipo == 'saida':
@@ -42,6 +43,7 @@ def registrar_movimentacao(request):
             return redirect('registrar_movimentacao')
 
         produto.save()
+        # Pega o usuario logado e registra a movimentação
         Movimentacao.objects.create(
             usuario=request.user,
             produto=produto,
@@ -54,7 +56,7 @@ def registrar_movimentacao(request):
     produtos = Produto.objects.all()
     return render(request, 'movimentacoes/form.html', {'produtos': produtos})
 
-
+# Realiza busca de produtos pelo nome.
 @login_required(login_url='/login')
 def buscar_produtos(request):
     termo = request.GET.get('q', '').strip()
@@ -64,11 +66,12 @@ def buscar_produtos(request):
         produtos = Produto.objects.filter(nome__icontains=termo)
     return render(request, 'produtos/listar.html', {'produtos': produtos, 'termo': termo})
 
-
+# Exibe detalhes do produto, incluindo entradas, saidas e saldo em estoque
 @login_required(login_url='/login')
 def detalhe_produto(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)
 
+    # Total das movimentaçoes
     entradas = Movimentacao.objects.filter(tipo='entrada').aggregate(Sum('quantidade'))['quantidade__sum'] or 0
     saidas = Movimentacao.objects.filter(tipo='saida').aggregate(Sum('quantidade'))['quantidade__sum'] or 0
 
@@ -81,7 +84,7 @@ def detalhe_produto(request, produto_id):
         'saldo': saldo
     })
 
-
+# Cria um novo produto no estoque.
 @login_required(login_url='/login')
 def criar_produto(request):
     if request.method == "POST":
@@ -105,7 +108,7 @@ def criar_produto(request):
         return redirect("listar_estoque")
     return render(request, "produtos/produtos_form.html")
 
-
+# Edita os dados de um produto existente
 @login_required(login_url='/login')
 def editar_produto(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)
@@ -125,7 +128,7 @@ def editar_produto(request, produto_id):
         return redirect("listar_estoque")
     return render(request, "produtos/produtos_form.html", {"produto": produto})
 
-
+# Remove produtos do estoque
 @login_required(login_url='/login')
 def deletar_produto(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)

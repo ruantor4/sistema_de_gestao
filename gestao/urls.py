@@ -24,10 +24,17 @@ from django.urls import path, include
 from user import views
 
 urlpatterns = [
+
+    # Rota do Django Admin
     path('admin/', admin.site.urls),
+
+    # Rota do modulo Usuários
     path('', include('user.urls')),
+
+    # Rota do modulo Usuários
     path('estoque/', include('estoque.urls')),
 
 
 ]
+# Diz ao Django onde encontrar e servir arquivos de midea
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

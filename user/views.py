@@ -12,31 +12,33 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 
 # Create your views here.
+
+# Exibe a pagina de login
 def login_user(request):
     return render(request, 'login.html')
 
-
+# Efetua o logout do sistema e redireciona a pagina incial
 def logout_user(request):
     logout(request)
     return redirect('home')
 
-
+# Envia um email link de redefinição de senha para o usuario
 def pedido_reset_senha(request):
     if request.method == "POST":
         email = request.POST.get("email")
-
+        # Verifica o email e existente no cadastro
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             user = None
-
+        # Se existir cria um identificador único e token de verificação temporario e gera o link
         if user:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
             reset_link = request.build_absolute_uri(
                 reverse("confirmacao_reset_senha", kwargs={"uidb64": uid, "token": token})
             )
-
+            # Dados do email
             subject = "Redefinição de senha"
             message = (f"Olá {user.username},"
                        f"\n\nClique no link abaixo para redefinir sua senha:\n\n{reset_link}"
@@ -53,19 +55,21 @@ def pedido_reset_senha(request):
 
     return render(request, "usuarios/pedido_reset_senha.html")
 
-
+#Página de confirmação da redefinição de senha.
 def confirmacao_reset_senha(request, uidb64, token):
+    # Decodifica o ID do usuario
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
-
+    # Verifica se é valido
     if user is not None and default_token_generator.check_token(user, token):
         if request.method == "POST":
             senha1 = request.POST.get("senha1")
             senha2 = request.POST.get("senha2")
 
+            # Validações de senha
             if senha1 != senha2:
                 messages.error(request, "As senhas não coincidem.")
             elif len(senha1) < 6:
@@ -81,7 +85,7 @@ def confirmacao_reset_senha(request, uidb64, token):
         messages.error(request, "Link inválido ou expirado.")
         return redirect("login")
 
-
+# Realiza a autenticação do usuário, verifica as credenciais, autentica e redireciona
 def submit_login(request):
     if request.POST:
         username = request.POST['username']
@@ -94,18 +98,18 @@ def submit_login(request):
             return redirect('home')
     return redirect('home')
 
-
+# Página inicial do sistema.
 @login_required(login_url='login/')
 def home(request):
     return render(request, 'home.html')
 
-
+#  Exibe a lista de usuários cadastrados no sistema.
 @login_required(login_url='login/')
 def listar_usuarios(request):
     usuarios = User.objects.all()
     return render(request, "usuarios/listar.html", {"usuarios": usuarios})
 
-
+#  Cria um novo usuário do sistema.
 @login_required(login_url='login/')
 def criar_usuario(request):
     if request.method == 'POST':
@@ -113,6 +117,7 @@ def criar_usuario(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
+        # Cria usuário de forma segura (com hash automático)
         usuario = User.objects.create_user(
             username=username,
             email=email,
@@ -124,7 +129,8 @@ def criar_usuario(request):
         return redirect('listar_usuarios')
     return render(request, "usuarios/usuarios_form.html")
 
-
+#  Edita informações de um usuário existente.
+#     Permite alterar username, e-mail e senha.
 @login_required(login_url='login/')
 def editar_usuario(request, usuario_id):
     usuario = get_object_or_404(User, id=usuario_id)
@@ -136,6 +142,7 @@ def editar_usuario(request, usuario_id):
         usuario.username = username
         usuario.email = email
 
+        # Só altera a senha se o campo for preenchido
         if senha:
             usuario.set_password(senha)
 
@@ -144,13 +151,20 @@ def editar_usuario(request, usuario_id):
         return redirect('listar_usuarios')
     return render(request, "usuarios/usuarios_form.html", {"usuario": usuario})
 
-
+# Remove usuarios do banco
 @login_required(login_url='login/')
 def deletar_usuario(request, usuario_id):
     usuario = get_object_or_404(User, id=usuario_id)
-    if usuario.is_superuser == 'admin':
-        messages.error(request, "Não é permitido excluir o admin")
-    else:
+
+    # Impede a exclusão do usuário admin principal
+    if usuario.username == 'admin':
+        messages.error(request, "O usuário 'admin' não pode ser excluído.")
+        return redirect('listar_usuarios')
+
+    # Verificação simples para evitar exclusão do admin
+    if request.usuario.is_superuser:
         usuario.delete()
-        messages.success(request, "Usuario deletado com sucesso!")
+        messages.success(request, f"Usuário '{usuario.username }' deletado com sucesso!")
+    else:
+        messages.error(request, "Apenas superusuários podem excluir usuários.")
     return redirect('listar_usuarios')
