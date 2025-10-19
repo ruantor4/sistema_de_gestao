@@ -1,34 +1,30 @@
 {% extends "model-page.html" %}
 
 {% block content %}
-    <div align="right">
-        <a href="/logout">
-            <button>Logout</button>
-        </a>
-    </div>
-    <h1>Usuários</h1>
-    <div align="left">
+    <h1 class="text-center container mt-5 ">Usuários</h1>
+    <div class="container-fluid col-10 w-0">
         {% if user.is_superuser %}
-        <a href="{% url 'criar_usuario' %}">
-            <button>Criar Usuário</button>
-        </a>
+            <a href="{% url 'criar_usuario' %}">
+                <button type="button" class="btn btn-primary btn-sm">Criar Usuário</button>
+            </a>
         {% endif %}
         <a href="{% url 'home' %}">
-            <button>Voltar</button>
+            <button type="button" class="btn btn-light btn-sm">Voltar</button>
         </a>
     </div>
     <br><br><br>
-
-    <div align="center">
-        <table border="1" cellpadding="5">
+    <div class="offset-md-1">
+        <table class="table">
+            <thead class="thead-dark ">
             <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Ativo</th>
-                <th>Admin</th>
-                <th></th>
+                <th scope="col">ID</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+                <th scope="col">Ativo</th>
+                <th scope="col">Admin</th>
+                <th scope="col">Ações</th>
             </tr>
+            </thead>
             {% for usuario in usuarios %}
                 <tr>
                     <td>{{ usuario.id }}</td>
@@ -38,25 +34,18 @@
                     <td>{{ usuario.is_superuser }}</td>
                     <td>
                         {% if user.is_superuser %}
-                        <a href="{% url 'editar_usuario' usuario.id %}">
-                            <button>Editar</button>
-                        </a>
-
-
-                        <a href="{% url 'deletar_usuario' usuario.id %}">
-                            <button>Excluir</button>
-                        </a>
+                            <a href="{% url 'editar_usuario' usuario.id %}" >
+                                <button type="button" class="btn btn-secondary btn-sm ">Editar</button>
+                            </a>
+                            <a href="{% url 'deletar_usuario' usuario.id %}">
+                                <button type="button" class="btn btn-danger btn-sm">Excluir</button>
+                            </a>
                         {% endif %}
                     </td>
-                    </th>
-
+                </div>
+                </th>
                 </tr>
-
             {% endfor %}
-
-        </table>
+    </table>
     </div>
-
-
-
 {% endblock %}

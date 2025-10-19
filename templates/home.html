@@ -1,34 +1,27 @@
 {% extends "model-page.html" %}
 
 {% block content %}
-    <div align="right">
-        <a href="/logout">
-            <button>Logout</button>
-        </a>
-    </div>
-
-
-    <h1 align="center">Painel Principal</h1>
-    <div align="center">
+    <h1 class="mt-5" align="center">Painel Principal</h1>
+    <div align="center" class="container mt-5">
         <p>
             <a href="{% url 'listar_usuarios' %}">
-                <button>Gestão de Usuários</button>
+                <button type="button" class="btn btn-primary btn-lg btn-block w-50">Gestão de Usuários</button>
             </a>
         </p>
         <p>
-            <a href="{% url 'listar_estoque' %}">
-                <button>Gestão de Estoque</button>
-            </a>
+        <a href="{% url 'listar_estoque' %}">
+            <button type="button" class="btn btn-secondary btn-lg btn-block w-50">Gestão de Estoque</button>
+        </a>
         </p>
         <p>
             <a href="{% url 'registrar_movimentacao' %}">
-                <button>Registrar movimentação</button>
+                <button type="button" class="btn btn-success btn-lg btn-block w-50">Registrar movimentação</button>
             </a>
         </p>
         <p>
-                <a href="{% url 'listar_movimentacao' %}">
-                    <button>Movimentações</button>
-                </a>
+            <a href="{% url 'listar_movimentacao' %}">
+                <button type="button" class="btn btn-warning btn-lg btn-block w-50">Movimentações</button>
+            </a>
         </p>
     </div>
 
