@@ -11,6 +11,7 @@ from django.utils.encoding import force_str, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 
+
 # Create your views here.
 
 
@@ -141,7 +142,7 @@ def deletar_usuario(request, usuario_id):
         return redirect('listar_usuarios')
 
     # Verificação simples para evitar exclusão do admin
-    if request.usuario.is_superuser:
+    if request.user.is_superuser:
         usuario.delete()
         messages.success(request, f"Usuário '{usuario.username }' deletado com sucesso!")
     else:
