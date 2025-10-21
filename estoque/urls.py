@@ -19,31 +19,32 @@ from itertools import product
 from django.contrib import admin
 from django.urls import path, include
 
-from estoque import views
+from estoque.views import ListarEstoqueView, DetalheProdutoView, BuscarProdutosView, CriarProdutoView, \
+    EditarProdutoView, DeletarProdutoView, ListarMovimentacaoView, RegistrarMovimentacaoView
 
 urlpatterns = [
 
     # Lista todos os produtos no estoque
-    path('', views.listar_estoque, name='listar_estoque'),
+    path('', ListarEstoqueView.as_view(), name='listar_estoque'),
 
     # Lista Produto especifico por ID
-    path('<int:produto_id>/', views.detalhe_produto, name='detalhe_produto'),
+    path('<int:produto_id>/',DetalheProdutoView.as_view(), name='detalhe_produto'),
 
     # Busca produtos
-    path('buscar/', views.buscar_produtos, name='buscar_produtos'),
+    path('buscar/', BuscarProdutosView.as_view(), name='buscar_produtos'),
 
     # Criação de um novo produto
-    path('criar_produto/', views.criar_produto, name='criar_produto'),
+    path('criar_produto/', CriarProdutoView.as_view(), name='criar_produto'),
 
     # Edita um produto existente pelo ID
-    path('editar_produto/<int:produto_id>/', views.editar_produto, name='editar_produto'),
+    path('editar_produto/<int:produto_id>/', EditarProdutoView.as_view(), name='editar_produto'),
 
     # Deleta um produto existente pelo ID
-    path('deletar_produto/<int:produto_id>/', views.deletar_produto, name='deletar_produto'),
+    path('deletar_produto/<int:produto_id>/', DeletarProdutoView.as_view(), name='deletar_produto'),
 
     # Lista todas as movimentações de estoque
-    path('movimentacoes/', views.listar_movimentacao, name='listar_movimentacao'),
+    path('movimentacoes/', ListarMovimentacaoView.as_view(), name='listar_movimentacao'),
 
     # Registrar nova movimentação (entrada/saída)
-    path('movimentacoes/registrar/', views.registrar_movimentacao, name='registrar_movimentacao'),
+    path('movimentacoes/registrar/', RegistrarMovimentacaoView.as_view(), name='registrar_movimentacao'),
 ]
