@@ -1,0 +1,17 @@
+{% extends "core/model-page.html" %}
+
+{% block content %}
+<div class="container mt-5 align-center">
+    <h2 class="mb-4">Recuperar senha</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <input class="ps-3" type="email" name="email" placeholder="Digite seu e-mail" required>
+        <button class="btn btn-primary btn-sm" type="submit">Enviar link</button>
+    </form>
+    
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 """
-URL configuration for gestao project.
+URL configuration for project project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -28,11 +28,16 @@ urlpatterns = [
     # Rota do Django Admin
     path('admin/', admin.site.urls),
 
+    # Rota do modulo Core
+    path('', include('core.urls')),
+
     # Rota do modulo Usuários
-    path('', include('user.urls')),
+    path('user/', include('user.urls')),
 
     # Rota do modulo Usuários
     path('estoque/', include('estoque.urls')),
+
+   
 
 
 ]

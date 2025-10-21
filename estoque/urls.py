@@ -1,5 +1,5 @@
 """
-URL configuration for gestao project.
+URL configuration for project project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -24,10 +24,10 @@ from estoque import views
 urlpatterns = [
 
     # Lista todos os produtos no estoque
-    path('estoque/', views.listar_estoque, name='listar_estoque'),
+    path('', views.listar_estoque, name='listar_estoque'),
 
     # Lista Produto especifico por ID
-    path('estoque/<int:produto_id>/', views.detalhe_produto, name='detalhe_produto'),
+    path('<int:produto_id>/', views.detalhe_produto, name='detalhe_produto'),
 
     # Busca produtos
     path('buscar/', views.buscar_produtos, name='buscar_produtos'),

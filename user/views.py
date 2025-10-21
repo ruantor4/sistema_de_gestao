@@ -13,14 +13,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 # Create your views here.
 
-# Exibe a pagina de login
-def login_user(request):
-    return render(request, 'login.html')
 
-# Efetua o logout do sistema e redireciona a pagina incial
-def logout_user(request):
-    logout(request)
-    return redirect('home')
 
 # Envia um email link de redefinição de senha para o usuario
 def pedido_reset_senha(request):
@@ -53,7 +46,7 @@ def pedido_reset_senha(request):
 
         return redirect("login")
 
-    return render(request, "usuarios/pedido_reset_senha.html")
+    return render(request, "user/pedido_reset_senha.html")
 
 #Página de confirmação da redefinição de senha.
 def confirmacao_reset_senha(request, uidb64, token):
@@ -80,34 +73,20 @@ def confirmacao_reset_senha(request, uidb64, token):
                 messages.success(request, "Senha redefinida com sucesso! Faça login novamente.")
                 return redirect("login")
 
-        return render(request, "usuarios/confirmacao_reset_senha.html", {"user": user})
+        return render(request, "user/confirmacao_reset_senha.html", {"user": user})
     else:
         messages.error(request, "Link inválido ou expirado.")
         return redirect("login")
 
-# Realiza a autenticação do usuário, verifica as credenciais, autentica e redireciona
-def submit_login(request):
-    if request.POST:
-        username = request.POST['username']
-        password = request.POST['password']
-        usuario = authenticate(username=username, password=password)
-        if usuario is None:
-            messages.error(request, " Usuário ou senha incorretos.")
-        else:
-            login(request, usuario)
-            return redirect('home')
-    return redirect('home')
 
-# Página inicial do sistema.
-@login_required(login_url='login/')
-def home(request):
-    return render(request, 'home.html')
+
+
 
 #  Exibe a lista de usuários cadastrados no sistema.
 @login_required(login_url='login/')
 def listar_usuarios(request):
     usuarios = User.objects.all()
-    return render(request, "usuarios/listar.html", {"usuarios": usuarios})
+    return render(request, "user/listar.html", {"usuarios": usuarios})
 
 #  Cria um novo usuário do sistema.
 @login_required(login_url='login/')
@@ -127,7 +106,7 @@ def criar_usuario(request):
         usuario.save()
         messages.success(request, "Usuario criado com sucesso!.")
         return redirect('listar_usuarios')
-    return render(request, "usuarios/usuarios_form.html")
+    return render(request, "user/usuarios_form.html")
 
 #  Edita informações de um usuário existente.
 #     Permite alterar username, e-mail e senha.
@@ -149,7 +128,7 @@ def editar_usuario(request, usuario_id):
         usuario.save()
         messages.success(request, "Usuario atualizado com sucesso!")
         return redirect('listar_usuarios')
-    return render(request, "usuarios/usuarios_form.html", {"usuario": usuario})
+    return render(request, "user/usuarios_form.html", {"usuario": usuario})
 
 # Remove usuarios do banco
 @login_required(login_url='login/')

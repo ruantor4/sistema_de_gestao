@@ -13,7 +13,7 @@ from estoque.models import Produto, Movimentacao
 @login_required(login_url='/login')
 def listar_estoque(request):
     produtos = Produto.objects.all()
-    return render(request, "produtos/listar.html", {"produtos": produtos})
+    return render(request, "estoque/listar.html", {"produtos": produtos})
 
 # Lista de movimentações
 @login_required(login_url='/login')
@@ -64,7 +64,7 @@ def buscar_produtos(request):
 
     if termo:
         produtos = Produto.objects.filter(nome__icontains=termo)
-    return render(request, 'produtos/listar.html', {'produtos': produtos, 'termo': termo})
+    return render(request, 'estoque/listar.html', {'produtos': produtos, 'termo': termo})
 
 # Exibe detalhes do produto, incluindo entradas, saidas e saldo em estoque
 @login_required(login_url='/login')
@@ -77,7 +77,7 @@ def detalhe_produto(request, produto_id):
 
     saldo = entradas - saidas
 
-    return render(request, 'produtos/detalhe_produto.html', {
+    return render(request, 'estoque/detalhe_produto.html', {
         'produto': produto,
         'entradas': entradas,
         'saidas': saidas,
@@ -106,7 +106,7 @@ def criar_produto(request):
         produto.save()
         messages.success(request, "Produto criado com sucesso!")
         return redirect("listar_estoque")
-    return render(request, "produtos/produtos_form.html")
+    return render(request, "estoque/produtos_form.html")
 
 # Edita os dados de um produto existente
 @login_required(login_url='/login')
@@ -126,7 +126,7 @@ def editar_produto(request, produto_id):
         produto.save()
         messages.success(request, "Produto atualizado com sucesso!")
         return redirect("listar_estoque")
-    return render(request, "produtos/produtos_form.html", {"produto": produto})
+    return render(request, "estoque/produtos_form.html", {"produto": produto})
 
 # Remove produtos do estoque
 @login_required(login_url='/login')
