@@ -17,12 +17,17 @@ Including another URLconf
 from django.urls import path
 
 from core import views
+from core.views import HomeView, LoginView, LogoutView
 
 urlpatterns = [
-    # Página inicial
-    path('', views.home, name='home'),
-    path('login/', views.login_user, name='login'),
-    path('login/submit', views.submit_login, name='submit_login'),
-    path('logout/', views.logout_user, name='logout'),
+
+    # Rota para Página inicial
+    path('', HomeView.as_view(), name='home'),
+
+    # Rota para Login
+    path('login/', LoginView.as_view(), name='login'),
+
+    # Rota para Logout
+    path('logout/', LogoutView.as_view(), name='logout'),
 
 ]
