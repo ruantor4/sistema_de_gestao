@@ -16,18 +16,22 @@ Including another URLconf
 """
 from django.urls import path
 
+from estoque.views import ListarEstoqueView
 from user import views
+from user.views import PedidoResetSenha, ConfirmacaoResetSenhaView, CriarUsuarioView, DeleteUsuarioView, \
+    EditarUsuarioView, ListarUsuariosView
+
 urlpatterns = [
 
     # Recuperação de senha
-    path('reset-password/', views.pedido_reset_senha, name='pedido_reset_senha'),
-    path('reset_password/<uidb64>/<token>/', views.confirmacao_reset_senha, name='confirmacao_reset_senha'),
+    path('reset-password/', PedidoResetSenha.as_view(), name='pedido_reset_senha'),
+    path('reset_password/<uidb64>/<token>/', ConfirmacaoResetSenhaView.as_view(), name='confirmacao_reset_senha'),
 
     # Gestão de usuários
-    path('listar/', views.listar_usuarios, name='listar_usuarios'),
-    path('criar/', views.criar_usuario, name='criar_usuario'),
-    path('deletar/<int:usuario_id>/', views.deletar_usuario, name='deletar_usuario'),
-    path('editar/<int:usuario_id>/', views.editar_usuario, name='editar_usuario'),
+    path('listar/', ListarUsuariosView.as_view(), name='listar_usuarios'),
+    path('criar/', CriarUsuarioView.as_view(), name='criar_usuario'),
+    path('deletar/<int:usuario_id>/', DeleteUsuarioView.as_view(), name='deletar_usuario'),
+    path('editar/<int:usuario_id>/', EditarUsuarioView.as_view(), name='editar_usuario'),
 
 ]
 
