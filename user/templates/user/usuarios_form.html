@@ -26,5 +26,9 @@
         <a href="{% url 'listar_usuarios' %}">
             <button class="btn btn-light" >Voltar</button>
         </a>
+
+    {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+    {% endfor %}
 </div>
 {% endblock %}

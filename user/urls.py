@@ -18,14 +18,14 @@ from django.urls import path
 
 from estoque.views import ListarEstoqueView
 from user import views
-from user.views import PedidoResetSenha, ConfirmacaoResetSenhaView, CriarUsuarioView, DeleteUsuarioView, \
+from user.views import PedidoResetSenhaView, ConfirmacaoResetSenhaView, CriarUsuarioView, DeleteUsuarioView, \
     EditarUsuarioView, ListarUsuariosView
 
 urlpatterns = [
 
     # Recuperação de senha
-    path('reset-password/', PedidoResetSenha.as_view(), name='pedido_reset_senha'),
-    path('reset_password/<uidb64>/<token>/', ConfirmacaoResetSenhaView.as_view(), name='confirmacao_reset_senha'),
+    path('reset-password/', PedidoResetSenhaView.as_view(), name='pedido_reset_senha'),
+    path('reset_password/<uidb64>/<token>/', ConfirmacaoResetSenhaView.as_view(), name='confirm_reset_senha'),
 
     # Gestão de usuários
     path('listar/', ListarUsuariosView.as_view(), name='listar_usuarios'),

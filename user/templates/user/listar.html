@@ -34,18 +34,21 @@
                     <td>{{ usuario.is_superuser }}</td>
                     <td>
                         {% if user.is_superuser %}
-                            <a href="{% url 'editar_usuario' usuario.id %}" >
+                            <a href="{% url 'editar_usuario' usuario.id %}">
                                 <button type="button" class="btn btn-secondary btn-sm ">Editar</button>
                             </a>
                             <a href="{% url 'deletar_usuario' usuario.id %}">
                                 <button type="button" class="btn btn-danger btn-sm">Excluir</button>
                             </a>
                         {% endif %}
+
                     </td>
-                </div>
-                </th>
-                </tr>
             {% endfor %}
-    </table>
+        </table>
+        <div class="container col-4 mt-5">
+            {% for message in messages %}
+                <p style="color:red;">{{ message }}</p>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}

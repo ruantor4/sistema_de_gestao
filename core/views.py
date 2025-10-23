@@ -1,10 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth import logout, authenticate, login
+from django.contrib.messages import success
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from core.utils import registrar_log
 
 
 class HomeView(LoginRequiredMixin, View): #
@@ -29,8 +31,12 @@ class HomeView(LoginRequiredMixin, View): #
             Returns:
                 django.http.HttpResponse: Resposta HTTP com a página home.
         """
-        return render(request, 'core/home.html')
-
+        try:
+            return render(request, 'core/home.html')
+        except Exception as e:
+            registrar_log(request.user,'Acessar Home', 'ERROR', str(e))
+            messages.error(request, "Erro ao carregar a página inicial do sistema.")
+            return redirect('login')
 
 class LoginView(View):
     """
@@ -52,9 +58,15 @@ class LoginView(View):
             Returns:
                 django.http.HttpResponse: Resposta HTTP com a página de login ou redirecionamento.
         """
-        if request.user.is_authenticated:
-           return redirect('home')
-        return render(request, 'core/login.html')
+        try:
+            if request.user.is_authenticated:
+                return redirect('home')
+            return render(request, 'core/login.html')
+        except Exception as e:
+            registrar_log(request.user,'Acessar Login', 'ERROR', str(e))
+            messages.error(request, "Erro ao carregar a página de login.")
+            return redirect('login')
+
 
     def post(self, request:HttpRequest) -> HttpResponse:
         """
@@ -71,16 +83,22 @@ class LoginView(View):
                 django.http.HttpResponse: Redireciona para home se login for bem-sucedido,
                 ou retorna à página de login em caso de erro.
         """
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        try:
+            username = request.POST.get('username')
+            password = request.POST.get('password')
 
-        usuario = authenticate(request, username=username, password=password)
-        if usuario is not None:
-            login(request, usuario)
-            return redirect('home')
-        else:
-            messages.error(request, "Usuário ou senha incorretos.")
-        return render(request, 'core/login.html')
+            usuario = authenticate(request, username=username, password=password)
+            if usuario is not None:
+                login(request, usuario)
+                registrar_log(usuario, 'Login', 'SUCCESS', f'{username} fez login com sucesso!.')
+                return redirect('home')
+            else:
+                messages.error(request, "Usuário ou senha incorretos.")
+                return render(request, 'core/login.html')
+        except Exception as e:
+            registrar_log(request.user,'Login', 'ERROR', str(e))
+            messages.error(request, "Erro inesperado ao processar o login." )
+            return redirect('login')
 
 
 class LogoutView(View):
@@ -99,6 +117,15 @@ class LogoutView(View):
             Returns:
                 django.http.HttpResponse: Redireciona para a página de login.
         """
-        logout(request)
-        return redirect('login')
+        try:
+            username = request.user.username if request.user.is_authenticated else 'Usuário desconhecido'
+            if request.user.is_authenticated:
+                logout(request)
+                registrar_log(request.user, 'Logout', success, f'{username} fez logout com sucesso!.')
+
+            return redirect('login')
+        except Exception as e:
+            registrar_log(request.user,'Logout', 'ERROR', str(e))
+            messages.error(request, "Erro inesperado ao encerrar a sessão.")
+            return redirect('login')
 
