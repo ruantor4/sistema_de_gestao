@@ -1,15 +1,10 @@
 {% extends "/core/model-page.html" %}
 
 {% block content %}
-    <div align="right">
-        <a href="/logout">
-            <button>Logout</button>
-        </a>
-    </div>
     <h2>{{ produto.nome }}</h2>
-    <p><strong>Descrição:</strong> {{ produto.descricao }}</p>
-    <p><strong>Quantidade:</strong> {{ produto.quantidade }}</p>
-    <p><strong>Localização:</strong> {{ produto.localizacao }}</p>
+        <p><strong>Descrição:</strong> {{ produto.descricao }}</p>
+        <p><strong>Quantidade:</strong> {{ produto.quantidade }}</p>
+        <p><strong>Localização:</strong> {{ produto.localizacao }}</p>
 
     {% if produto.imagem %}
         <img src="{{ produto.imagem.url }}" alt="{{ produto.nome }}" width="200" style="transition: 0.3s;">
@@ -25,12 +20,15 @@
     <br>
 
     <h3>Estoque</h3>
-    <p><strong>Total de Entradas:</strong> {{ entradas }}</p>
-    <p><strong>Total de Saídas:</strong> {{ saidas }}</p>
-    <p><strong>Saldo Atual:</strong> {{ saldo }}</p>
-    <br>
+        <p><strong>Total de Entradas:</strong> {{ entradas }}</p>
+        <p><strong>Total de Saídas:</strong> {{ saidas }}</p>
+        <p><strong>Saldo Atual:</strong> {{ saldo }}</p>
+        <br>
     <a href="{% url 'listar_estoque' %}">
         <button>Voltar</button>
     </a>
     <br>
+    {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+    {% endfor %}
 {% endblock %}

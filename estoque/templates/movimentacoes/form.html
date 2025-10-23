@@ -1,12 +1,6 @@
 {% extends 'core/model-page.html' %}
 
 {% block content %}
-     <div align="right">
-        <a href="/logout">
-            <button>Logout</button>
-        </a>
-    </div>
-    
     <h2>Registrar Movimentação</h2>
     <form method="POST">
         {% csrf_token %}
@@ -33,12 +27,12 @@
         <input type="number" name="quantidade" id="quantidade" min="1" required>
         <br><br>
 
-        <button type="submit">Registrar</button>
+        <button class="btn btn-primary btn-sm" type="submit">Registrar</button>
     
     </form>
     <br>
         <a href="{% url 'home' %}">
-            <button>Voltar</button>
+            <button class="btn btn-light btn-sm">Voltar</button>
         </a>
     <br>
     {% if messages %}
@@ -48,4 +42,7 @@
             {% endfor %}
         </ul>
     {% endif %}
+    {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+    {% endfor %}
 {% endblock %}

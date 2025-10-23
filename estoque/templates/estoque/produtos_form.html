@@ -1,11 +1,6 @@
 {% extends "core/model-page.html" %}
 
 {% block content %}
-    <div align="right">
-        <a href="/logout">
-            <button>Logout</button>
-        </a>
-    </div>
     <div align="center">
         <h1>{% if produto %}Editar Produto{% else %}Criar Produto{% endif %}</h1>
 
@@ -41,17 +36,21 @@
             <label>Localização:</label>
             <input type="text" name="localizacao" value="{% if produto %}{{ produto.localizacao }}{% endif %}" required>
             <br><br>
-            
+
             <label>Descrição:</label><br>
-            <textarea name="descricao" rows="10" cols="25" required>{% if produto %}{{ produto.descricao }}{% endif %}</textarea>
+            <textarea name="descricao" rows="10" cols="25" required>{% if produto %}
+                {{ produto.descricao }}{% endif %}</textarea>
             <br><br>
 
-            <button type="submit">{% if produto %}Atualizar{% else %}Criar{% endif %}</button>
+            <button class="btn btn-primary btn-sm" type="submit">{% if produto %}Atualizar{% else %}Criar{% endif %}</button>
         </form>
         <br>
         <a href="{% url 'listar_estoque' %}">
-            <button>Voltar</button>
+            <button class="btn btn-light btn-sm">Voltar</button>
         </a>
     </div>
+    {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+    {% endfor %}
 {% endblock %}
 

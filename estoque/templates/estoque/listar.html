@@ -1,17 +1,12 @@
 {% extends "core/model-page.html" %}
 
 {% block content %}
-    <div align="right">
-        <a href="/logout">
-            <button>Logout</button>
-        </a>
-    </div>
     <div align="center">
         <h2>Buscar Produtos</h2>
 
         <form method="GET" action="{% url 'buscar_produtos' %}">
             <input type="text" name="q" value="{{ termo }}" placeholder="Digite o nome do produto..." required>
-            <button type="submit">Buscar</button>
+            <button class="btn btn-warning btn-sm" type="submit">Buscar</button>
             {% if termo %}
                 <a href="{% url 'listar_estoque' %}">
                     <button type="button">Limpar</button>
@@ -19,23 +14,20 @@
             {% endif %}
             {% if produtos %}
                 <h3>Resultados da busca por {{ termo }}:</h3>
-
             {% elif termo %}
                 <p>Nenhum produto encontrado para "{{ termo }}".</p>
             {% endif %}
-
         </form>
-
     </div>
     <h1>Produtos</h1>
     <div align="left">
         {% if user.is_superuser %}
             <a href="{% url 'criar_produto' %}">
-                <button>Criar Produto</button>
+                <button class="btn btn-primary btn-sm">Criar Produto</button>
             </a>
         {% endif %}
         <a href="{% url 'home' %}">
-            <button>Voltar</button>
+            <button class="btn btn-light btn-sm">Voltar</button>
         </a>
     </div>
 
@@ -97,6 +89,9 @@
         </table>
     </div>
 
+    {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+    {% endfor %}
 
 
 {% endblock %}
