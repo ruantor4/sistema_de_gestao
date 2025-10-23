@@ -1,5 +1,5 @@
 """
-URL configuration for gestao project.
+URL configuration for project project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
@@ -16,25 +16,22 @@ Including another URLconf
 """
 from django.urls import path
 
+from estoque.views import ListarEstoqueView
 from user import views
-urlpatterns = [
-    # Página inicial
-    path('', views.home, name='home'),
+from user.views import PedidoResetSenhaView, ConfirmacaoResetSenhaView, CriarUsuarioView, DeleteUsuarioView, \
+    EditarUsuarioView, ListarUsuariosView
 
-    # Autenticação
-    path('login/', views.login_user, name='login'),
-    path('login/submit', views.submit_login),
-    path('logout/', views.logout_user, name='logout'),
+urlpatterns = [
 
     # Recuperação de senha
-    path('reset-password/', views.pedido_reset_senha, name='pedido_reset_senha'),
-    path('reset_password/<uidb64>/<token>/', views.confirmacao_reset_senha, name='confirmacao_reset_senha'),
+    path('reset-password/', PedidoResetSenhaView.as_view(), name='pedido_reset_senha'),
+    path('reset_password/<uidb64>/<token>/', ConfirmacaoResetSenhaView.as_view(), name='confirm_reset_senha'),
 
     # Gestão de usuários
-    path('listar/', views.listar_usuarios, name='listar_usuarios'),
-    path('criar/', views.criar_usuario, name='criar_usuario'),
-    path('deletar/<int:usuario_id>/', views.deletar_usuario, name='deletar_usuario'),
-    path('editar/<int:usuario_id>/', views.editar_usuario, name='editar_usuario'),
+    path('listar/', ListarUsuariosView.as_view(), name='listar_usuarios'),
+    path('criar/', CriarUsuarioView.as_view(), name='criar_usuario'),
+    path('deletar/<int:usuario_id>/', DeleteUsuarioView.as_view(), name='deletar_usuario'),
+    path('editar/<int:usuario_id>/', EditarUsuarioView.as_view(), name='editar_usuario'),
 
 ]
 

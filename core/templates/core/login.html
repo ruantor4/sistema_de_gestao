@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-br" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tela de Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body class="text-bg-dark p-3 w-auto text-start px-3">
+<nav class="navbar bg-primary">
+    <div class="text-start">
+        <span class="navbar-brand h1 ps-3 text-light">Sistema de Gestão</span>
+    </div>
+</nav>
+<br>
+<form action="{% url 'login' %}" method="POST">{% csrf_token %}
+    <div class="container p-5 mt-5">
+        <h1 class="text-center text-light h1 text-center text-light h-5 mt-5">Login</h1><br><br>
+        <div class="form-floating w-25 mx-auto mt-1">
+            <input type="text" class="form-control w-100 form-control-sm bg-transparent text-light border-light"
+                   name="username" id="floatingInput" placeholder="name@example.com">
+            <label for="floatingInput" class="text-light">Usuário</label>
+        </div>
+        <div class="form-floating w-25 mx-auto mt-3" align="">
+            <input type="password" class="form-control w-100 form-control-sm bg-transparent text-light border-light"
+                   name="password" id="floatingPassword" placeholder="Password">
+            <label for="floatingPassword" class="text-light">Senha</label><br>
+            <button type="submit" class="btn btn-primary">Entrar</button>
+            <br><br>
+            <p><a href="{% url 'pedido_reset_senha' %}">Esqueceu sua senha?</a></p><br>
+        </div>
+    </div>
+</form>
+<br>
+{% for message in messages %}
+    <div align="center">
+        <strong></strong> {{ message }}
+    </div>
+{% endfor %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+</html>

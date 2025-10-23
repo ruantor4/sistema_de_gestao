@@ -6,7 +6,7 @@ __pycache__/
 
 # Migrations (se quiser ignorar arquivos de migração gerados)
 # estoque/migrations/
-# gestao/migrations/
+# project/migrations/
 
 # Banco de dados local
 db.sqlite3
@@ -16,7 +16,7 @@ venv/
 .venv/
 env/
 .env/
-
+*.env
 # Logs
 *.log
 

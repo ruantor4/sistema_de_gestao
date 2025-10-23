@@ -1,0 +1,23 @@
+{% extends "core/model-page.html" %}
+
+{% block content %}
+    <div class="container">
+        <h2>Redefinir senha</h2>
+    
+        <form method="POST">
+            {% csrf_token %}
+            <label>Nova senha:</label><br>
+            <input type="password" name="senha1" required><br><br>
+    
+            <label>Confirmar nova senha:</label><br>
+            <input type="password" name="senha2" required><br><br>
+    
+            <button class="btn btn-primary btn-sm" type="submit">Alterar senha</button>
+        </form>
+    
+
+        {% for message in messages %}
+            <p style="color:red;">{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endblock %}

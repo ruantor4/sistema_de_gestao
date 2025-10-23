@@ -1,0 +1,20 @@
+{% extends "core/model-page.html" %}
+
+{% block content %}
+<h2>Confirmação de exclusão</h2>
+    <p>Tem certeza de que deseja excluir o usuário <strong>{{ usuario.username }}</strong>?</p>
+
+    {% if usuario.username|lower == 'admin' %}
+        <p class="text-danger">Este usuário é protegido e não pode ser excluído.</p>
+        <a href="{% url 'listar_usuarios' %}" class="btn btn-secondary">Voltar</a>
+    {% else %}
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Excluir</button>
+      <a href="{% url 'listar_usuarios' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+        {% for message in messages %}
+            <p style="color:red;">{{ message }}</p>
+        {% endfor %}
+  {% endif %}
+{% endblock %}
