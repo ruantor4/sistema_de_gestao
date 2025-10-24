@@ -17,7 +17,7 @@
         <input class="" type="email" name="email" value="{% if usuario %}{{ usuario.email }}{% endif %}" required><br><br>
 
         <label>Senha:</label>
-        <input class="" type="password" name="password" placeholder="{% if usuario %}Deixe em branco para não alterar {% else %} {% endif %}"><br><br>
+        <input class="" type="password" name="senha" placeholder="{% if usuario %}Deixe em branco para não alterar {% else %} {% endif %}"><br><br>
     </div>
     
             <button class="btn btn-primary" type="submit">{% if usuario %}Atualizar{% else %}Criar{% endif %}</button>

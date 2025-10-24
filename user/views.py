@@ -15,53 +15,51 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views import View
 
 from core.utils import registrar_log
+from user.utils import validar_criacao_usuario, validar_edicao_usuario, validar_senha
 
 
-# Envia um email link de redefinição de senha para o usuario
 class PedidoResetSenhaView(View):
     """
-        View responsável por iniciar o processo de redefinição de senha.
-        Envia um link de redefinição para o e-mail do usuário.
+        Inicia o processo de redefinição de senha enviando um link seguro para o e-mail do usuário.
 
         Métodos:
-            get: Exibe o formulário para informar o e-mail.
-            post: Gera o link de redefinição e envia o e-mail.
+            get: Exibe o formulário de solicitação.
+            post: Gera o token e envia o link de redefinição.
     """
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """
-            Exibe a página para o usuário inserir seu e-mail de recuperação.
+           Exibe a página para inserção do e-mail de recuperação.
 
-            Args:
-                request (django.http.HttpRequest): Objeto da requisição HTTP.
+           Args:
+               request (HttpRequest): Objeto de requisição HTTP.
 
-            Returns:
-                django.http.HttpResponse: Página HTML com o formulário.
+           Returns:
+               HttpResponse: Página HTML com o formulário.
         """
         return render(request, "user/pedido_reset_senha.html")
 
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """
-             Processa o envio do formulário de recuperação de senha.
+            Processa o envio do link de redefinição de senha.
+                - Verifica se o e-mail existe no banco de dados.
+                - Cria um token e UID de segurança.
+                - Envia um link de redefinição de senha para o e-mail informado.
 
-             - Verifica se o e-mail existe no banco de dados.
-             - Cria um token e UID de segurança.
-             - Envia um link de redefinição de senha para o e-mail informado.
+           Args:
+               request (HttpRequest): Objeto de requisição HTTP.
 
-             Args:
-                 request (django.http.HttpRequest): Objeto da requisição HTTP.
-
-             Returns:
-                 django.http.HttpResponse: Redireciona para a tela de login após envio.
-         """
-
+           Returns:
+               HttpResponse: Redireciona para a tela de login após envio.
+        """
         email = request.POST.get('email')
 
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             user = None
+
         except Exception as e:
             registrar_log(request.user, "Reset de senha", "ERROR", f"Erro ao buscar usuário por e-mail: {str(e)}")
             messages.error(request, "Ocorreu um erro inesperado. Tente novamente mais tarde.")
@@ -85,6 +83,7 @@ class PedidoResetSenhaView(View):
                 send_mail(subject, message, None, [email])
                 registrar_log(request.user, "Reset de senha", "SUCCESS", "Link de redefinição enviado com sucesso.")
                 messages.success(request, "Um link de redefinição de senha foi enviado para seu e-mail.")
+
             except Exception as e:
                 registrar_log(request.user, "Reset de senha", "ERROR", f"Erro ao enviar e-mail de reset:{str(e)}")
                 messages.error(request, "Não foi possível enviar o e-mail. Tente novamente mais tarde.")
@@ -95,22 +94,23 @@ class PedidoResetSenhaView(View):
 
 class ConfirmacaoResetSenhaView(View):
     """
-         View responsável por confirmar e concluir o processo de redefinição de senha.
+        Confirma e conclui o processo de redefinição de senha.
 
-         Métodos:
-             get_user: Decodifica e retorna o usuário a partir do UID.
-             get: Exibe o formulário para redefinição de senha.
-             post: Valida e aplica a nova senha do usuário.
-     """
+        Métodos:
+            get_user: Obtém o usuário pelo UID decodificado.
+            get: Exibe o formulário de redefinição.
+            post: Valida e aplica a nova senha.
+    """
+
     def get_user(self, uidb64):
         """
             Decodifica o UID e obtém o usuário correspondente.
 
             Args:
-                uidb64 (str): Identificador codificado em base64 do usuário.
+                uidb64 (str): Identificador codificado do usuário.
 
             Returns:
-                User | None: Usuário encontrado ou None em caso de erro.
+                User | None: Usuário correspondente ou None.
         """
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
@@ -123,20 +123,18 @@ class ConfirmacaoResetSenhaView(View):
             registrar_log(None, "Reset de senha", "ERROR", f"Erro ao decodificar UID: {str(e)}")
             return None
 
-
     def get(self, request: HttpRequest, uidb64, token) -> HttpResponse:
         """
-            Exibe o formulário de redefinição de senha caso o token seja válido.
+            Exibe o formulário de redefinição de senha se o token for válido.
 
             Args:
-                request (django.http.HttpRequest): Objeto da requisição HTTP.
-                uidb64 (str): UID codificado do usuário.
-                token (str): Token temporário de verificação.
+                request (HttpRequest): Objeto da requisição HTTP.
+                uidb64 (str): UID codificado.
+                token (str): Token de verificação.
 
             Returns:
-                django.http.HttpResponse: Página HTML ou redirecionamento.
+                HttpResponse: Página HTML ou redirecionamento.
         """
-
         user = self.get_user(uidb64)
 
         if user is not None and default_token_generator.check_token(user, token):
@@ -148,16 +146,16 @@ class ConfirmacaoResetSenhaView(View):
 
     def post(self, request: HttpRequest, uidb64, token) -> HttpResponse:
         """
-             Processa a redefinição de senha após validações.
+            Aplica a redefinição de senha após validação.
 
-             Args:
-                 request (django.http.HttpRequest): Objeto da requisição HTTP.
-                 uidb64 (str): UID codificado do usuário.
-                 token (str): Token temporário de verificação.
+            Args:
+                request (HttpRequest): Objeto da requisição HTTP.
+                uidb64 (str): UID codificado.
+                token (str): Token de verificação.
 
-             Returns:
-                 django.http.HttpResponse: Redireciona para login após sucesso ou erro.
-         """
+            Returns:
+                HttpResponse: Redireciona para login após redefinir.
+        """
         user = self.get_user(uidb64)
         if user is None or not default_token_generator.check_token(user, token):
             messages.error(request, "Link inválido ou expirado.")
@@ -165,7 +163,6 @@ class ConfirmacaoResetSenhaView(View):
 
         senha1 = request.POST.get("senha1")
         senha2 = request.POST.get("senha2")
-
 
         if senha1 != senha2:
             messages.error(request, "As senhas não coincidem.")
@@ -178,7 +175,9 @@ class ConfirmacaoResetSenhaView(View):
         try:
             user.password = make_password(senha1)
             user.save()
+            registrar_log(user, "Reset de Senha, SUCCESS", "Senha redefinida com sucesso.")
             messages.success(request, "Senha redefinida com sucesso! Faça login novamente.")
+
         except Exception as e:
             registrar_log(request.user, "Reset de senha", "ERROR", f"Erro ao definir senha: {str(e)}")
             messages.error(request.user, "Reset de senha", "ERROR", "Erro ao redefinir a senha. Tente novamente mais tarde.")
@@ -188,10 +187,10 @@ class ConfirmacaoResetSenhaView(View):
 
 class ListarUsuariosView(LoginRequiredMixin, View):
     """
-        View responsável por listar todos os usuários cadastrados no sistema.
+        Lista todos os usuários cadastrados no sistema.
 
         Métodos:
-            get: Exibe a página com a listagem dos usuários.
+            get: Renderiza a página com a lista de usuários.
     """
 
     def get(self, request: HttpRequest) -> HttpResponse:
@@ -199,33 +198,32 @@ class ListarUsuariosView(LoginRequiredMixin, View):
             Exibe a página de listagem de usuários.
 
             Args:
-                request (django.http.HttpRequest): Objeto da requisição HTTP.
+                request (HttpRequest): Objeto da requisição HTTP.
 
             Returns:
-                django.http.HttpResponse: Página HTML contendo a lista de usuários.
+                HttpResponse: Página HTML com a lista de usuários.
         """
-        usuarios = User.objects.all()
-        return render(request, "user/listar.html", {"usuarios": usuarios})
+        try:
+            usuarios = User.objects.all()
+            return render(request, "user/listar.html", {"usuarios": usuarios})
+        except Exception as e:
+            registrar_log(request.user, "Listar Usuários", "ERROR", str(e))
+            messages.error(request, "Erro ao carregar a lista de usuários.")
+            return redirect('home')
 
 
 class CriarUsuarioView(LoginRequiredMixin, View):
     """
-        View responsável pela criação de novos usuários.
+        Cria novos usuários no sistema.
 
         Métodos:
             get: Exibe o formulário de criação.
-            post: Processa e salva o novo usuário no banco.
+            post: Valida e salva o novo usuário.
     """
 
     def get(self, request: HttpRequest) -> HttpResponse:
         """
-            Exibe o formulário de criação de usuário.
-
-            Args:
-                request (django.http.HttpRequest): Objeto da requisição HTTP.
-
-            Returns:
-                django.http.HttpResponse: Página HTML com o formulário.
+            Renderiza o formulário de criação de usuário.
         """
         return render(request, "user/usuarios_form.html")
 
@@ -242,33 +240,13 @@ class CriarUsuarioView(LoginRequiredMixin, View):
              Returns:
                  django.http.HttpResponse: Redireciona para listagem após sucesso ou erro.
          """
-
         username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-
-        if not username or not email or not password:
-            messages.error(request, "Todos campos são obrigatorios")
+        if not validar_criacao_usuario(request, username, email, password):
             return redirect('criar_usuario')
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Já existe um usuário com este nome de usuário.")
-            return redirect('criar_usuario')
-
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Este e-mail já está em uso.")
-            return redirect('criar_usuario')
-
-        try:
-            validate_email(email)
-        except ValidationError as e:
-            messages.error(request, "Endereço de e-mail invalido")
-            return redirect("criar_usuario")
-
-        if len(password) < 6:
-            messages.warning(request, "A senha deve ter pelo menos 6 caracteres.")
-            return redirect(request.path)
         try:
             with transaction.atomic():
                 user = User.objects.create_user(
@@ -281,7 +259,10 @@ class CriarUsuarioView(LoginRequiredMixin, View):
             return redirect('listar_usuarios')
 
         except IntegrityError:
+            registrar_log(request.user, "Criar Usuário", "ERROR", "Erro de integridade no banco de dados.")
             messages.error(request, "Erro de integridaade no banco. Tente novamente.")
+            return redirect('listar_usuarios')
+
         except Exception as e:
             registrar_log(request.user, "Criar Usuário", "SUCCESS", "Erro de integridade no banco de dados.")
             messages.error(request, f"Ocorreu um erro inesperado: {str(e)}")
@@ -313,39 +294,40 @@ class EditarUsuarioView(LoginRequiredMixin, View):
 
     def post(self, request: HttpRequest, usuario_id) -> HttpResponse:
         """
-            Atualiza os dados de um usuário existente, verificando duplicidade
-            de e-mail e nome de usuário antes da gravação.
+            post:
+                Atualiza os dados de um usuário existente.
 
             Args:
-                request (django.http.HttpRequest): Objeto da requisição HTTP.
+                request (HttpRequest): Requisição HTTP.
                 usuario_id (int): ID do usuário a ser atualizado.
 
             Returns:
-                django.http.HttpResponse: Redireciona após salvar ou exibir erro.
+                HttpResponse: Redireciona após sucesso ou erro.
         """
-
         usuario = get_object_or_404(User, id=usuario_id)
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        senha = request.POST.get('senha')
+        username = request.POST.get('username','').strip()
+        email = request.POST.get('email','').strip()
+        senha = request.POST.get('senha','').strip()
 
-        if User.objects.filter(username=username).exclude(id=usuario_id).exists():
-            messages.error(request, "Já existe outro usuário com este nome.")
-            return redirect('editar_usuario', usuario_id=usuario_id)
+        if not validar_edicao_usuario(request, usuario, username, email):
+            return render(request, "user/usuarios_form.html", {"usuario": usuario})
 
-        if User.objects.filter(email=email).exclude(id=usuario_id).exists():
-            messages.error(request, "Este e-mail já está em uso por outro usuário.")
-            return redirect('editar_usuario', usuario_id=usuario_id)
+        if not validar_senha(request, senha):
+            return render(request, "user/usuarios_form.html", {"usuario": usuario})
 
-        usuario.username = username
-        usuario.email = email
-
-        if senha:
-            usuario.set_password(senha)
         try:
+            usuario.username = username
+            usuario.email = email
+
+            if senha:
+                usuario.set_password(senha)
+                registrar_log(request.user, "Editar Usuário", "SUCCESS",
+                              f"Senha do usuário '{usuario.username}' alterada.")
             usuario.save()
             registrar_log(request.user, "Editar Usuário", "SUCCESS", f"Usuário '{usuario.username}' atualizado.")
             messages.success(request, "Usuário atualizado com sucesso!")
+            return redirect('listar_usuarios')
+
         except Exception as e:
             registrar_log(request.user, "Editar Usuário", "ERROR", f"Erro ao atualizar usuário: {str(e)}")
             messages.error(request, "Erro ao atualizar usuário. Tente novamente.")
@@ -387,7 +369,6 @@ class DeleteUsuarioView(LoginRequiredMixin, View):
             Returns:
                 django.http.HttpResponse: Redireciona para listagem após exclusão.
         """
-
         usuario = get_object_or_404(User, id=usuario_id)
 
         if usuario.username.lower() == 'admin':
