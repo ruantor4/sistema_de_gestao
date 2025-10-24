@@ -1,4 +1,4 @@
-{% extends "/core/model-page.html" %}
+{% extends "core/model-page.html" %}
 
 {% block content %}
     <h2>{{ produto.nome }}</h2>
@@ -25,7 +25,7 @@
         <p><strong>Saldo Atual:</strong> {{ saldo }}</p>
         <br>
     <a href="{% url 'listar_estoque' %}">
-        <button>Voltar</button>
+        <button class="btn btn-light btn-sm">Voltar</button>
     </a>
     <br>
     {% for message in messages %}

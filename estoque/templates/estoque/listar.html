@@ -9,7 +9,7 @@
             <button class="btn btn-warning btn-sm" type="submit">Buscar</button>
             {% if termo %}
                 <a href="{% url 'listar_estoque' %}">
-                    <button type="button">Limpar</button>
+                    <button class="btn btn-secondary btn-sm" type="button">Limpar</button>
                 </a>
             {% endif %}
             {% if produtos %}
@@ -75,11 +75,11 @@
                     <td>
                         {% if user.is_superuser %}
                             <a href="{% url 'editar_produto' produto.id %}">
-                                <button>Editar</button>
+                                <button class="btn btn-secondary btn-sm">Editar</button>
                             </a>
 
                             <a href="{% url 'deletar_produto' produto.id %}">
-                                <button>Excluir</button>
+                                <button class="btn btn-danger btn-sm">Excluir</button>
                             </a>
                         {% endif %}
                     </td>

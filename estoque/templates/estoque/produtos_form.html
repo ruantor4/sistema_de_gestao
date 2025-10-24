@@ -34,11 +34,11 @@
             <br><br>
 
             <label>Localização:</label>
-            <input type="text" name="localizacao" value="{% if produto %}{{ produto.localizacao }}{% endif %}" required>
+            <input type="text" name="localizacao" value="{% if produto %}{{ produto.localizacao }}{% endif %}" >
             <br><br>
 
             <label>Descrição:</label><br>
-            <textarea name="descricao" rows="10" cols="25" required>{% if produto %}
+            <textarea name="descricao" rows="10" cols="25">{% if produto %}
                 {{ produto.descricao }}{% endif %}</textarea>
             <br><br>
 
