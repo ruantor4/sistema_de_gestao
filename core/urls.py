@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.urls import path
 
-from core import views
+
 from core.views import HomeView, LoginView, LogoutView
 
 urlpatterns = [
@@ -31,3 +31,4 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
 
 ]
+

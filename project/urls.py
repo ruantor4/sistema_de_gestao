@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 
-from user import views
+from core.views import Erro404View, Erro500View
 
 urlpatterns = [
 
@@ -36,10 +36,11 @@ urlpatterns = [
 
     # Rota do modulo Usuários
     path('estoque/', include('estoque.urls')),
-
-   
-
-
 ]
+
+# Handlers globais
+handler404 = Erro404View.as_view()
+handler500 = Erro500View.as_view()
+
 # Diz ao Django onde encontrar e servir arquivos de midea
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -3,9 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from django.core.validators import validate_email
 from django.db import transaction, IntegrityError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -57,6 +55,7 @@ class PedidoResetSenhaView(View):
 
         try:
             user = User.objects.get(email=email)
+
         except User.DoesNotExist:
             user = None
 
