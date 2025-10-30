@@ -35,14 +35,14 @@
             <button class="btn btn-light btn-sm">Voltar</button>
         </a>
     <br>
-    {% if messages %}
+   <div>
+        {% if messages %}
         <ul>
             {% for message in messages %}
-                <li>{{ message }}</li>
+                <p style="color:red;">{{ message }}</p>
             {% endfor %}
         </ul>
-    {% endif %}
-    {% for message in messages %}
-        <p style="color:red;">{{ message }}</p>
-    {% endfor %}
+        {% endif %}
+    </div>
+
 {% endblock %}

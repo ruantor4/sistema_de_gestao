@@ -49,8 +49,14 @@
             <button class="btn btn-light btn-sm">Voltar</button>
         </a>
     </div>
-    {% for message in messages %}
-        <p style="color:red;">{{ message }}</p>
-    {% endfor %}
+    <div>
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <p style="color:red;">{{ message }}</p>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
 {% endblock %}
 

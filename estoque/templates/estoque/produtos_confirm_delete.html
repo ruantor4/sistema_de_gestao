@@ -9,7 +9,13 @@
             <button type="submit" class="btn btn-danger">Excluir</button>
             <a href="{% url 'listar_estoque' %}" class="btn btn-secondary">Cancelar</a>
     </form>
-        {% for message in messages %}
-            <p style="color:red;">{{ message }}</p>
-        {% endfor %}
+    <div>
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <p style="color:red;">{{ message }}</p>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
 {% endblock %}
