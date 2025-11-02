@@ -4,11 +4,7 @@ import traceback
 
 
 def registrar_log(user: User, action: str, status: str, message: str):
-    """
-        Registra um log genérico no banco de dados.
-
-        :param user: Usuário responsável pela ação.
-        :param action: Descrição da ação (ex: 'Criar Usuário').
+    """: 'Criar Usuário').
         :param status: Status da ação ('SUCESSO', 'ERRO', 'AVISO').
         :param message: Detalhes ou observações da ação.
     """
@@ -25,6 +21,10 @@ def registrar_log(user: User, action: str, status: str, message: str):
 
 def registrar_error(user: User, action: str, error: Exception):
     """
+        Registra um log genérico no banco de dados.
+
+        :param user: Usuário responsável pela ação.
+        :param action: Descrição da ação (ex
         Registra um log de erro automaticamente com rastreamento completo.
 
         :param user: Usuário que executava a ação.

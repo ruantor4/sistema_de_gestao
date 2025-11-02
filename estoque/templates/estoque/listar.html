@@ -1,57 +1,51 @@
 {% extends "core/model-page.html" %}
 
 {% block content %}
-    <div align="right">
-        <a href="/logout">
-            <button>Logout</button>
-        </a>
-    </div>
     <div align="center">
         <h2>Buscar Produtos</h2>
 
         <form method="GET" action="{% url 'buscar_produtos' %}">
             <input type="text" name="q" value="{{ termo }}" placeholder="Digite o nome do produto..." required>
-            <button type="submit">Buscar</button>
+            <button class="btn btn-warning btn-sm" type="submit">Buscar</button>
             {% if termo %}
                 <a href="{% url 'listar_estoque' %}">
-                    <button type="button">Limpar</button>
+                    <button class="btn btn-secondary btn-sm" type="button">Limpar</button>
                 </a>
             {% endif %}
             {% if produtos %}
                 <h3>Resultados da busca por {{ termo }}:</h3>
-
             {% elif termo %}
                 <p>Nenhum produto encontrado para "{{ termo }}".</p>
             {% endif %}
-
         </form>
-
     </div>
-    <h1>Produtos</h1>
-    <div align="left">
+    <h1 class="text-center container mt-5 ">Produtos</h1>
+    <div class="container-fluid col-10 w-0">
         {% if user.is_superuser %}
             <a href="{% url 'criar_produto' %}">
-                <button>Criar Produto</button>
+                <button class="btn btn-primary btn-sm">Criar Produto</button>
             </a>
         {% endif %}
         <a href="{% url 'home' %}">
-            <button>Voltar</button>
+            <button class="btn btn-light btn-sm">Voltar</button>
         </a>
     </div>
 
     <br><br><br>
-    <div align="center">
-        <table border="1" cellpadding="5">
+    <div class="offset-md-1">
+        <table class="table">
+            <thead class="thead-dark">
             <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>quantidade</th>
-                <th>Imagem do produto</th>
-                <th>Anexo</th>
-                <th>Localização</th>
-                <th>Descrição</th>
-                <th></th>
+                <th scope="col">ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">quantidade</th>
+                <th scope="col">Imagem do produto</th>
+                <th scope="col">Anexo</th>
+                <th scope="col">Localização</th>
+                <th scope="col">Descrição</th>
+                <th scope="col">Ações</th>
             </tr>
+            </thead>
             {% for produto in produtos %}
                 <tr>
                     <td>{{ produto.id }}</td>
@@ -63,7 +57,7 @@
                     <td>{{ produto.quantidade }}</td>
                     <td>
                         {% if produto.imagem %}
-                            <img src="{{ produto.imagem.url }}" alt="Imagem" width="80"
+                            <img src="{{ produto.imagem.url }}" alt="Imagem" width="50"
                                  style="transition: transform 0.2s;"
                                  onmouseover="this.style.transform='scale(1.2)'"
                                  onmouseout="this.style.transform='scale(1)'">
@@ -83,20 +77,25 @@
                     <td>
                         {% if user.is_superuser %}
                             <a href="{% url 'editar_produto' produto.id %}">
-                                <button>Editar</button>
+                                <button class="btn btn-secondary btn-sm">Editar</button>
                             </a>
 
                             <a href="{% url 'deletar_produto' produto.id %}">
-                                <button>Excluir</button>
+                                <button class="btn btn-danger btn-sm">Excluir</button>
                             </a>
                         {% endif %}
                     </td>
-                    </th>
                 </tr>
             {% endfor %}
         </table>
     </div>
-
-
-
+<div>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <p style="color:red;">{{ message }}</p>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    </div>
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends "core/model-page.html" %}
+
+{% block content %}
+<h2>Confirmação de exclusão</h2>
+    <p>Tem certeza de que deseja excluir o produto <strong>{{ produto.nome }}</strong>?</p>
+
+    <form method="post">
+        {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Excluir</button>
+            <a href="{% url 'listar_estoque' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+    <div>
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <p style="color:red;">{{ message }}</p>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+{% endblock %}
