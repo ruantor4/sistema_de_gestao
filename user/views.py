@@ -35,8 +35,14 @@ class PedidoResetSenhaView(View):
            Returns:
                HttpResponse: Página HTML com o formulário.
         """
-        return render(request, "user/pedido_reset_senha.html")
+        try:
+            return render(request, "user/pedido_reset_senha.html")
 
+        except Exception as e:
+            registrar_log(request.user if request.user.is_authenticated else None, "Reset de senha", "ERROR",
+                          f"Erro ao abrir pagina de reset de senha {str(e)}")
+            messages.error(request, "Erro ao abrir pagina de reset de senha")
+            return redirect('login')
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """
@@ -60,7 +66,8 @@ class PedidoResetSenhaView(View):
             user = None
 
         except Exception as e:
-            registrar_log(request.user, "Reset de senha", "ERROR", f"Erro ao buscar usuário por e-mail: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Reset de senha", "ERROR",
+                          f"Erro ao enviar solitação: {str(e)}")
             messages.error(request, "Ocorreu um erro inesperado. Tente novamente mais tarde.")
             return redirect('login')
 
@@ -80,12 +87,13 @@ class PedidoResetSenhaView(View):
                 )
 
                 send_mail(subject, message, None, [email])
-                registrar_log(request.user, "Reset de senha", "SUCCESS", "Link de redefinição enviado com sucesso.")
                 messages.success(request, "Um link de redefinição de senha foi enviado para seu e-mail.")
+                redirect('login')
 
             except Exception as e:
-                registrar_log(request.user, "Reset de senha", "ERROR", f"Erro ao enviar e-mail de reset:{str(e)}")
+                registrar_log(request.user if request.user.is_authenticated else None, "Reset de senha", "ERROR", f"Erro ao enviar e-mail de reset:{str(e)}")
                 messages.error(request, "Não foi possível enviar o e-mail. Tente novamente mais tarde.")
+                return redirect('login')
         else:
             messages.warning(request, "Se o e-mail existir, enviaremos um link de redefinição.")
         return redirect("login")
@@ -120,6 +128,7 @@ class ConfirmacaoResetSenhaView(View):
 
         except Exception as e:
             registrar_log(None, "Reset de senha", "ERROR", f"Erro ao decodificar UID: {str(e)}")
+            messages.error("Erro ao decodificar UID")
             return None
 
     def get(self, request: HttpRequest, uidb64, token) -> HttpResponse:
@@ -134,12 +143,18 @@ class ConfirmacaoResetSenhaView(View):
             Returns:
                 HttpResponse: Página HTML ou redirecionamento.
         """
-        user = self.get_user(uidb64)
+        try:
+            user = self.get_user(uidb64)
 
-        if user is not None and default_token_generator.check_token(user, token):
-            return render(request, "user/confirm_reset_senha.html", {"user": user})
-        else:
-            messages.error(request, "Link inválido ou expirado.")
+            if user is not None and default_token_generator.check_token(user, token):
+                return render(request, "user/confirm_reset_senha.html", {"user": user})
+            else:
+                messages.error(request, "Link inválido ou expirado.")
+                return redirect("login")
+
+        except Exception as e:
+            registrar_log(request.user if request.user.is_authenticated else None, "Confirmar reset de senha", "ERROR",
+                          f"Erro na confirmação de reset:{str(e)}")
             return redirect("login")
 
 
@@ -174,12 +189,11 @@ class ConfirmacaoResetSenhaView(View):
         try:
             user.password = make_password(senha1)
             user.save()
-            registrar_log(user, "Reset de Senha, SUCCESS", "Senha redefinida com sucesso.")
             messages.success(request, "Senha redefinida com sucesso! Faça login novamente.")
 
         except Exception as e:
-            registrar_log(request.user, "Reset de senha", "ERROR", f"Erro ao definir senha: {str(e)}")
-            messages.error(request.user, "Reset de senha", "ERROR", "Erro ao redefinir a senha. Tente novamente mais tarde.")
+            registrar_log(request.user if request.user.is_authenticated else None, "Reset de senha", "ERROR", f"Erro ao definir senha: {str(e)}")
+            messages.error(request,"Erro ao redefinir a senha. Tente novamente mais tarde.")
         return redirect("login")
 
 
@@ -206,7 +220,8 @@ class ListarUsuariosView(LoginRequiredMixin, View):
             usuarios = User.objects.all()
             return render(request, "user/listar.html", {"usuarios": usuarios})
         except Exception as e:
-            registrar_log(request.user, "Listar Usuários", "ERROR", str(e))
+            registrar_log(request.user if request.user.is_authenticated else None, "Listar Usuários", "ERROR",
+                          f"Erro ao carregar a lista de usuários: {str(e)}")
             messages.error(request, "Erro ao carregar a lista de usuários.")
             return redirect('home')
 
@@ -224,7 +239,14 @@ class CriarUsuarioView(LoginRequiredMixin, View):
         """
             Renderiza o formulário de criação de usuário.
         """
-        return render(request, "user/usuarios_form.html")
+        try:
+            return render(request, "user/usuarios_form.html")
+
+        except Exception as e:
+            registrar_log(request.user if request.user.is_authenticated else None, "Criar Usuario", "ERROR",
+                          f"Erro ao exibir pagina de criação de usuario `{str(e)}")
+            messages.error(request, "Erro ao exibir pagina.")
+            return redirect('criar_usuario')
 
     def post(self, request: HttpRequest) -> HttpResponse:
         """
@@ -251,22 +273,21 @@ class CriarUsuarioView(LoginRequiredMixin, View):
 
         try:
             with transaction.atomic():
-                user = User.objects.create_user(
+                User.objects.create_user(
                     username=username,
                     email=email,
                     password=password
                 )
-                registrar_log(request.user, "Criar Usuário", "SUCCESS", f"Usuário '{user.username}' criado com sucesso!.")
             messages.success(request, "Usuário criado com sucesso!.")
             return redirect('listar_usuarios')
 
         except IntegrityError:
-            registrar_log(request.user, "Criar Usuário", "ERROR", "Erro de integridade no banco de dados.")
             messages.error(request, "Erro de integridaade no banco. Tente novamente.")
             return redirect('listar_usuarios')
 
         except Exception as e:
-            registrar_log(request.user, "Criar Usuário", "SUCCESS", "Erro de integridade no banco de dados.")
+            registrar_log(request.user if request.user.is_authenticated else None, "Criar Usuário", "ERROR",
+                          f"Erro de inesperado: {str(e)}")
             messages.error(request, f"Ocorreu um erro inesperado: {str(e)}")
         return redirect('criar_usuario')
 
@@ -291,8 +312,15 @@ class EditarUsuarioView(LoginRequiredMixin, View):
             Returns:
                 django.http.HttpResponse: Página HTML com os dados preenchidos.
         """
-        usuario = get_object_or_404(User, id=usuario_id)
-        return render(request, "user/usuarios_form.html", {"usuario": usuario})
+        try:
+            usuario = get_object_or_404(User, id=usuario_id)
+            return render(request, "user/usuarios_form.html", {"usuario": usuario})
+
+        except Exception as e:
+            registrar_log(request.user if request.user.is_authenticated else None, "Editar Usuario", "ERROR",
+                          f"Erro ao editar usuario: {str(e)}")
+            messages.error(request, "Erro ao exibir págine, tente novamente!.")
+            return redirect('editar_usuario')
 
     def post(self, request: HttpRequest, usuario_id) -> HttpResponse:
         """
@@ -323,15 +351,15 @@ class EditarUsuarioView(LoginRequiredMixin, View):
 
             if senha:
                 usuario.set_password(senha)
-                registrar_log(request.user, "Editar Usuário", "SUCCESS",
-                              f"Senha do usuário '{usuario.username}' alterada.")
+                messages.error(request, f"Senha do usuário '{usuario.username}' alterada.")
+
             usuario.save()
-            registrar_log(request.user, "Editar Usuário", "SUCCESS", f"Usuário '{usuario.username}' atualizado.")
             messages.success(request, "Usuário atualizado com sucesso!")
             return redirect('listar_usuarios')
 
         except Exception as e:
-            registrar_log(request.user, "Editar Usuário", "ERROR", f"Erro ao atualizar usuário: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Editar Usuário", "ERROR",
+                          f"Erro ao atualizar usuário: {str(e)}")
             messages.error(request, "Erro ao atualizar usuário. Tente novamente.")
         return redirect('listar_usuarios')
 
@@ -356,8 +384,15 @@ class DeleteUsuarioView(LoginRequiredMixin, View):
             Returns:
                 django.http.HttpResponse: Página HTML de confirmação.
         """
-        usuario = get_object_or_404(User, id=usuario_id)
-        return render(request, 'user/confirmacao_delete.html', {"usuario": usuario})
+        try:
+            usuario = get_object_or_404(User, id=usuario_id)
+            return render(request, 'user/confirmacao_delete.html', {"usuario": usuario})
+
+        except Exception as e:
+            registrar_log(request.user if request.user.is_authenticated else None, "Deletar Usuario", "ERROR",
+                          f"Erro ao exibir pagina de exclusão.")
+            messages.error(request, "Erro inesperado")
+            return redirect('listar_usuarios')
 
     def post(self, request: HttpRequest, usuario_id) -> HttpResponse:
         """
@@ -382,11 +417,11 @@ class DeleteUsuarioView(LoginRequiredMixin, View):
             return redirect('listar_usuarios')
         try:
             usuario.delete()
-            registrar_log(request.user, "Excluir Usuário", "SUCCESS", f"Usuário '{usuario.username}' deletado.")
             messages.success(request, f"Usuário '{usuario.username}' deletado com sucesso.")
             return redirect('listar_usuarios')
 
         except Exception as e:
-            registrar_log(request.user, "Excluir Usuário", "ERROR", f"Erro ao deletar usuário: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Excluir Usuário", "ERROR",
+                          f"Erro ao deletar usuário: {str(e)}")
             messages.error(request, "Erro ao excluir o usuário. Tente novamente mais tarde.")
         return redirect('listar_usuarios')
