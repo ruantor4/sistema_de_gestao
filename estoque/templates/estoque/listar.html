@@ -19,8 +19,8 @@
             {% endif %}
         </form>
     </div>
-    <h1>Produtos</h1>
-    <div align="left">
+    <h1 class="text-center container mt-5 ">Produtos</h1>
+    <div class="container-fluid col-10 w-0">
         {% if user.is_superuser %}
             <a href="{% url 'criar_produto' %}">
                 <button class="btn btn-primary btn-sm">Criar Produto</button>
@@ -32,18 +32,20 @@
     </div>
 
     <br><br><br>
-    <div align="center">
-        <table border="1" cellpadding="5">
+    <div class="offset-md-1">
+        <table class="table">
+            <thead class="thead-dark">
             <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>quantidade</th>
-                <th>Imagem do produto</th>
-                <th>Anexo</th>
-                <th>Localização</th>
-                <th>Descrição</th>
-                <th></th>
+                <th scope="col">ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">quantidade</th>
+                <th scope="col">Imagem do produto</th>
+                <th scope="col">Anexo</th>
+                <th scope="col">Localização</th>
+                <th scope="col">Descrição</th>
+                <th scope="col">Ações</th>
             </tr>
+            </thead>
             {% for produto in produtos %}
                 <tr>
                     <td>{{ produto.id }}</td>
@@ -55,7 +57,7 @@
                     <td>{{ produto.quantidade }}</td>
                     <td>
                         {% if produto.imagem %}
-                            <img src="{{ produto.imagem.url }}" alt="Imagem" width="80"
+                            <img src="{{ produto.imagem.url }}" alt="Imagem" width="50"
                                  style="transition: transform 0.2s;"
                                  onmouseover="this.style.transform='scale(1.2)'"
                                  onmouseout="this.style.transform='scale(1)'">
@@ -83,7 +85,6 @@
                             </a>
                         {% endif %}
                     </td>
-                    </th>
                 </tr>
             {% endfor %}
         </table>
