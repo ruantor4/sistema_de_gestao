@@ -243,7 +243,10 @@ class CriarUsuarioView(LoginRequiredMixin, View):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        if not validar_criacao_usuario(request, username, email, password):
+        if not validar_criacao_usuario(request, username, email,):
+            return redirect('criar_usuario')
+
+        if not validar_senha(request, password):
             return redirect('criar_usuario')
 
         try:

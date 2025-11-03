@@ -39,7 +39,7 @@ class ListarMovimentacaoView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro ao carregar movimentacoes: {str(e)}")
-            registrar_log(request.user, "Listar Movimentações", "ERROR", f"Erro ao listar movimentações: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Listar Movimentações", "ERROR", f"Erro ao listar movimentações: {str(e)}")
             movimentacoes = []
 
         return render(request, 'movimentacoes/listar_movimentacao.html', {'movimentacoes': movimentacoes})
@@ -72,7 +72,7 @@ class RegistrarMovimentacaoView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro ao Registar Movimentação: {str(e)}")
-            registrar_log(request.user, "Registar Movimentação", "ERROR",
+            registrar_log(request.user if request.user.is_authenticated else None, "Registar Movimentação", "ERROR",
                           f"Erro ao carregar produtos no formulário de movimentação: {str(e)}")
             produtos = []
 
@@ -127,12 +127,12 @@ class RegistrarMovimentacaoView(LoginRequiredMixin, View):
             return redirect('listar_movimentacao')
 
         except Produto.DoesNotExist:
-            messages.error(request, "Produto não encontrado.")
+            messages.error(request, "Movimentação não encontrado.")
             return redirect('registrar_movimentacao')
 
         except Exception as e:
             messages.error(request, f"Erro ao registrar movimentações: {str(e)}")
-            registrar_log(request.user, "Registrar Movimentação", "ERROR", f"Erro ao registrar movimentações: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Registrar Movimentação", "ERROR", f"Erro ao registrar movimentações: {str(e)}")
             return redirect('listar_movimentacao')
 
 
@@ -162,7 +162,8 @@ class ListarEstoqueView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro ao carregar produtos: {str(e)}")
-            registrar_log(request.user, "Listar Produtos", "ERROR", f"Erro ao listar produtos: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Listar Produtos", "ERROR",
+                          f"Erro ao listar produtos: {str(e)}")
             produtos = []
 
         return render(request, "estoque/listar.html", {"produtos": produtos})
@@ -195,7 +196,7 @@ class BuscarProdutosView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro ao buscar produtos: {str(e)}")
-            registrar_log(request.user, "Buscar Produtos", "ERROR", f"Erro ao buscar produtos: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Buscar Produtos", "ERROR", f"Erro ao buscar produtos: {str(e)}")
             produtos = Produto.objects.none()
 
         return render(request, 'estoque/listar.html', {'produtos': produtos, 'termo': termo})
@@ -233,7 +234,7 @@ class DetalheProdutoView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro ao carregar detalhes do produto: {str(e)}")
-            registrar_log(request.user, "Detalhes Produto", "ERROR", f"Erro ao carregar detalhes do produto: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Detalhes Produto", "ERROR", f"Erro ao carregar detalhes do produto: {str(e)}")
             return redirect('listar_estoque')
 
         return render(request, 'estoque/detalhe_produto.html', {
@@ -261,7 +262,7 @@ class CriarProdutoView(LoginRequiredMixin, View):
             return render(request, "estoque/produtos_form.html")
 
         except Exception as e:
-            registrar_log(request.user, "Criar Produto", "ERROR", f"Erro ao carregar pagina: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Criar Produto", "ERROR", f"Erro ao carregar pagina: {str(e)}")
             return redirect('listar_estoque')
 
     def post(self, request: HttpRequest) -> HttpResponse:
@@ -287,7 +288,6 @@ class CriarProdutoView(LoginRequiredMixin, View):
             quantidade = None
 
         if not validar_produto(request, nome, localizacao, quantidade):
-            registrar_log(request.user, "Criar Produto", "ERROR", "Falha na validação ao criar produto.")
             return redirect('criar_produto')
 
         try:
@@ -314,7 +314,7 @@ class CriarProdutoView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro ao criar produto: {str(e)}")
-            registrar_log(request.user, "Criar Produto", "ERROR", f"Erro ao criar produto: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Criar Produto", "ERROR", f"Erro ao criar produto: {str(e)}")
             return redirect("criar_produto")
 
 
@@ -336,7 +336,7 @@ class EditarProdutoView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro ao carregar tela de edição: {str(e)}")
-            registrar_log(request.user, "Editar Produto", 'ERROR',
+            registrar_log(request.user if request.user.is_authenticated else None, "Editar Produto", 'ERROR',
                           f"Erro ao carregar produto para edição: {str(e)}.")
             return redirect("listar_estoque")
 
@@ -355,7 +355,6 @@ class EditarProdutoView(LoginRequiredMixin, View):
             quantidade = None
 
         if not validar_produto(request, nome, localizacao, quantidade):
-            registrar_log(request.user, "Editar produto", "ERROR", "Falha na validação ao editar produto.")
             return redirect("editar_produto", produto_id=produto_id)
 
         try:
@@ -387,7 +386,7 @@ class EditarProdutoView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro inesperado ao atualizar produto: {str(e)}")
-            registrar_log(request.user, 'Atualizar Produto', 'ERROR',
+            registrar_log(request.user if request.user.is_authenticated else None, 'Atualizar Produto', 'ERROR',
                   f"Erro inesperado ao atualizar produto ID {produto_id}: {str(e)}")
             return redirect('editar_produto', produto_id=produto_id)
 
@@ -421,7 +420,7 @@ class DeletarProdutoView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro ao carregar produto: {str(e)}")
-            registrar_log(request.user, "Deletar Produto", "ERROR",
+            registrar_log(request.user if request.user.is_authenticated else None, "Deletar Produto", "ERROR",
                           f"Erro ao carregar produto {produto_id} para exclusão: {str(e)}")
             return redirect("listar_estoque")
 
@@ -449,6 +448,7 @@ class DeletarProdutoView(LoginRequiredMixin, View):
 
         except Exception as e:
             messages.error(request, f"Erro ao deletar produto: {str(e)}")
-            registrar_log(request.user, "Deletar Produto", "ERROR", f"Erro ao deletar produto {produto_id}: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Deletar Produto", "ERROR",
+                          f"Erro ao deletar produto {produto_id}: {str(e)}")
             return redirect('listar_estoque')
 

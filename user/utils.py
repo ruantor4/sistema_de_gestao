@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 
 
-def validar_criacao_usuario(request, username: str, email: str, password: str) -> bool:
+def validar_criacao_usuario(request, username: str, email: str) -> bool:
     """
         Valida os campos obrigatórios e regras de criação de um usuário.
 
@@ -17,7 +17,7 @@ def validar_criacao_usuario(request, username: str, email: str, password: str) -
         Returns:
             bool: True se a validação for bem-sucedida, False caso contrário.
     """
-    if not username or not email or not password:
+    if not username and not email:
         messages.error(request, "Todos os campos são obrigatórios.")
         return False
 
@@ -33,10 +33,6 @@ def validar_criacao_usuario(request, username: str, email: str, password: str) -
         validate_email(email)
     except ValidationError:
         messages.error(request, "Endereço de e-mail inválido.")
-        return False
-
-    if len(password) < 6:
-        messages.warning(request, "A senha deve ter pelo menos 6 caracteres.")
         return False
 
     return True

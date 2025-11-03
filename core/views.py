@@ -35,7 +35,7 @@ class HomeView(LoginRequiredMixin, View):  #
             return render(request, 'core/home.html')
 
         except Exception as e:
-            registrar_log(request.user, "Acessar Home", "ERROR", f"Erro ao carregar pagina: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Acessar Home", "ERROR", f"Erro ao carregar pagina: {str(e)}")
             messages.error(request, "Erro ao carregar a página inicial do sistema.")
             return redirect('login')
 
@@ -67,7 +67,7 @@ class LoginView(View):
             return render(request, 'core/login.html')
 
         except Exception as e:
-            registrar_log(request.user, "Acessar Login", "ERROR", f"Erro inesperado:{str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Acessar Login", "ERROR", f"Erro inesperado:{str(e)}")
             messages.error(request, "Erro ao carregar a página de login.")
             return redirect('login')
 
@@ -99,7 +99,7 @@ class LoginView(View):
                 return render(request, 'core/login.html')
 
         except Exception as e:
-            registrar_log(request.user, "Login", "ERROR", f"Erro inesperado: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Login", "ERROR", f"Erro inesperado: {str(e)}")
             messages.error(request, "Erro inesperado ao processar o login.")
             return redirect('login')
 
@@ -129,7 +129,7 @@ class LogoutView(View):
             return redirect('login')
 
         except Exception as e:
-            registrar_log(request.user, "Logout", "ERROR", f"Erro inesperado: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "Logout", "ERROR", f"Erro inesperado: {str(e)}")
             messages.error(request, "Erro inesperado ao encerrar a sessão.")
             return redirect('login')
 
@@ -163,7 +163,7 @@ class Erro404View(View):
             return render(request, 'core/404.html', status=404)
 
         except Exception as e:
-            registrar_log(request.user,"ERRO404", "ERROR", f"Erro inesperado: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None,"ERRO404", "ERROR", f"Erro inesperado: {str(e)}")
             return render(request, 'core/404.html', status=404)
 
 
@@ -195,5 +195,5 @@ class Erro500View(View):
             return render(request, 'core/500.html', status=500)
 
         except Exception as e:
-            registrar_log(request.user, "ERRO500", "ERROR", f"Erro inesperado: {str(e)}")
+            registrar_log(request.user if request.user.is_authenticated else None, "ERRO500", "ERROR", f"Erro inesperado: {str(e)}")
             return render(request, 'core/500.html', status=500)
